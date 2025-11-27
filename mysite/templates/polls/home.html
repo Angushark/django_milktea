@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>奶茶尋 - 台北奶茶店搜尋系統</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo h1 {
+            font-size: 3rem;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .search-section {
+            margin-bottom: 40px;
+        }
+
+        .search-input {
+            border-radius: 25px;
+            padding: 15px 25px;
+            border: 2px solid #e0e0e0;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .search-btn {
+            border-radius: 25px;
+            padding: 15px 35px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: transform 0.2s;
+        }
+
+        .search-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .feature-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .feature-btn {
+            padding: 30px;
+            border-radius: 15px;
+            text-decoration: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .feature-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-decoration: none;
+            color: white;
+        }
+
+        .feature-btn i {
+            display: block;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .btn-shops {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-drinks {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .btn-nearby {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .btn-favorites {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 30px 20px;
+            }
+
+            .logo h1 {
+                font-size: 2rem;
+            }
+
+            .feature-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="logo">
+            <h1><i class="fas fa-mug-hot"></i> 奶茶尋</h1>
+            <p>找到你最愛的奶茶店</p>
+        </div>
+
+        <div class="search-section">
+            <form method="GET" action="{% url 'shop_list' %}">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control search-input"
+                           placeholder="搜尋店家名稱或地址...">
+                    <div class="input-group-append">
+                        <button class="btn search-btn" type="submit">
+                            <i class="fas fa-search"></i> 搜尋
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="feature-buttons">
+            <a href="{% url 'shop_list' %}" class="feature-btn btn-shops">
+                <i class="fas fa-store"></i>
+                瀏覽所有店家
+            </a>
+
+            <a href="{% url 'recommended_drinks' %}" class="feature-btn btn-drinks">
+                <i class="fas fa-fire"></i>
+                推薦品項
+            </a>
+
+            <a href="{% url 'nearby_shops' %}" class="feature-btn btn-nearby">
+                <i class="fas fa-map-marked-alt"></i>
+                附近店家
+            </a>
+
+            <a href="#" class="feature-btn btn-favorites" onclick="alert('登入功能開發中...'); return false;">
+                <i class="fas fa-heart"></i>
+                個人收藏
+            </a>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

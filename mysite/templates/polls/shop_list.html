@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>店家列表 - 奶茶尋</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .back-btn:hover {
+            color: #f0f0f0;
+            text-decoration: none;
+        }
+
+        .search-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .search-input {
+            border-radius: 25px;
+            padding: 10px 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .search-btn {
+            border-radius: 25px;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: bold;
+        }
+
+        .filter-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .filter-btn {
+            margin: 5px;
+            border-radius: 20px;
+            padding: 8px 20px;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .shop-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border: 1px solid #f0f0f0;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .shop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .shop-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .shop-rating {
+            color: #ff9800;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .badge-open {
+            background: #4caf50;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+
+        .badge-closed {
+            background: #f44336;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{% url 'home' %}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> 返回首頁
+                </a>
+                <h1><i class="fas fa-store"></i> 店家列表</h1>
+                <div class="text-white">
+                    {{ total_count }} 家店家
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-section">
+            <form method="GET" action="{% url 'shop_list' %}">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control search-input"
+                           placeholder="搜尋店家名稱或地址..." value="{{ search_query }}">
+                    <div class="input-group-append">
+                        <button class="btn search-btn" type="submit">
+                            <i class="fas fa-search"></i> 搜尋
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="filter-section">
+            <div class="d-flex flex-wrap align-items-center">
+                <span class="mr-3"><strong>篩選：</strong></span>
+                <a href="?open_now=true&rating={{ rating_filter }}&sort={{ sort_by }}&search={{ search_query }}"
+                   class="btn btn-outline-success filter-btn {% if open_now %}active{% endif %}">
+                    <i class="fas fa-clock"></i> 營業中
+                </a>
+                <a href="?rating=4.5&open_now={{ open_now }}&sort={{ sort_by }}&search={{ search_query }}"
+                   class="btn btn-outline-primary filter-btn {% if rating_filter == '4.5' %}active{% endif %}">
+                    <i class="fas fa-star"></i> 4.5星以上
+                </a>
+                <a href="?rating=4.0&open_now={{ open_now }}&sort={{ sort_by }}&search={{ search_query }}"
+                   class="btn btn-outline-primary filter-btn {% if rating_filter == '4.0' %}active{% endif %}">
+                    <i class="fas fa-star"></i> 4.0星以上
+                </a>
+                <a href="?open_now=&rating=&sort={{ sort_by }}&search={{ search_query }}"
+                   class="btn btn-outline-secondary filter-btn {% if not rating_filter and not open_now %}active{% endif %}">
+                    全部
+                </a>
+
+                <span class="mx-3">|</span>
+                <span class="mr-3"><strong>排序：</strong></span>
+                <a href="?rating={{ rating_filter }}&open_now={{ open_now }}&sort=rating_desc&search={{ search_query }}"
+                   class="btn btn-outline-info filter-btn {% if sort_by == 'rating_desc' or sort_by == '-rating' %}active{% endif %}">
+                    評分 <i class="fas fa-arrow-down"></i>
+                </a>
+                <a href="?rating={{ rating_filter }}&open_now={{ open_now }}&sort=rating_asc&search={{ search_query }}"
+                   class="btn btn-outline-info filter-btn {% if sort_by == 'rating_asc' %}active{% endif %}">
+                    評分 <i class="fas fa-arrow-up"></i>
+                </a>
+                <a href="?rating={{ rating_filter }}&open_now={{ open_now }}&sort=name&search={{ search_query }}"
+                   class="btn btn-outline-info filter-btn {% if sort_by == 'name' %}active{% endif %}">
+                    店名
+                </a>
+            </div>
+        </div>
+
+        {% if search_query %}
+        <div class="mb-3">
+            <h5>搜尋結果: "{{ search_query }}"</h5>
+        </div>
+        {% endif %}
+
+        {% for shop in tea_shops %}
+        <a href="{% url 'shop_detail' shop.id %}" class="shop-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="shop-name">{{ shop.name }}</div>
+                {% if shop.is_open_now == True %}
+                    <span class="badge-open"><i class="fas fa-check-circle"></i> 營業中</span>
+                {% elif shop.is_open_now == False %}
+                    <span class="badge-closed"><i class="fas fa-times-circle"></i> 休息中</span>
+                {% endif %}
+            </div>
+
+            <div class="shop-rating mb-2">
+                <i class="fas fa-star"></i> {{ shop.rating }}
+            </div>
+
+            <div class="text-muted mb-2">
+                <i class="fas fa-map-marker-alt"></i> {{ shop.address }}
+            </div>
+
+            {% if shop.phone %}
+            <div class="text-muted mb-2">
+                <i class="fas fa-phone"></i> {{ shop.phone }}
+            </div>
+            {% endif %}
+
+            <div class="text-muted" style="font-size: 0.9rem;">
+                <i class="fas fa-clock"></i> {{ shop.opening_hours|truncatewords:10 }}
+            </div>
+        </a>
+        {% empty %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> 找不到符合條件的店家
+        </div>
+        {% endfor %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -156,6 +156,7 @@ class Favorite(models.Model):
     favorite_type = models.CharField(max_length=10, choices=FAVORITE_TYPE_CHOICES, verbose_name='收藏類型')
     tea_shop = models.ForeignKey(TeaShop, on_delete=models.CASCADE, blank=True, null=True, related_name='favorited_by', verbose_name='收藏的店家')
     drink = models.ForeignKey(Drink, on_delete=models.CASCADE, blank=True, null=True, related_name='favorited_by', verbose_name='收藏的飲料')
+    notes = models.TextField(blank=True, null=True, verbose_name='備註')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='收藏時間')
 
     class Meta:

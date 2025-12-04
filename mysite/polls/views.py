@@ -1,7 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
-from .models import TeaShop, Drink
+from .models import TeaShop, Drink, Favorite
 from math import radians, sin, cos, sqrt, atan2
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 
 
 def home(request):
@@ -267,3 +274,163 @@ def index(request):
     }
 
     return render(request, 'polls/index.html', context)
+
+
+# ===== 使用者認證相關 =====
+
+def register(request):
+    """使用者註冊"""
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, '註冊成功！歡迎加入奶茶尋。')
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'polls/register.html', {'form': form})
+
+
+def user_login(request):
+    """使用者登入"""
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'歡迎回來，{username}！')
+                next_url = request.GET.get('next', 'home')
+                return redirect(next_url)
+    else:
+        form = AuthenticationForm()
+    return render(request, 'polls/login.html', {'form': form})
+
+
+def user_logout(request):
+    """使用者登出"""
+    logout(request)
+    messages.info(request, '您已成功登出。')
+    return redirect('home')
+
+
+# ===== 收藏功能相關 =====
+
+@login_required
+def favorites_list(request):
+    """個人收藏清單頁面"""
+    # 取得篩選類型
+    filter_type = request.GET.get('type', 'all')  # all, shop, drink
+
+    # 取得使用者的所有收藏
+    favorites = Favorite.objects.filter(user=request.user)
+
+    # 根據類型篩選
+    if filter_type == 'shop':
+        favorites = favorites.filter(favorite_type='shop')
+    elif filter_type == 'drink':
+        favorites = favorites.filter(favorite_type='drink')
+
+    context = {
+        'favorites': favorites,
+        'filter_type': filter_type,
+        'total_count': favorites.count(),
+    }
+
+    return render(request, 'polls/favorites.html', context)
+
+
+@login_required
+@require_POST
+def add_favorite(request):
+    """新增收藏（AJAX）"""
+    favorite_type = request.POST.get('type')  # shop 或 drink
+    item_id = request.POST.get('id')
+
+    try:
+        if favorite_type == 'shop':
+            shop = get_object_or_404(TeaShop, id=item_id)
+            favorite, created = Favorite.objects.get_or_create(
+                user=request.user,
+                favorite_type='shop',
+                tea_shop=shop,
+                drink=None
+            )
+        elif favorite_type == 'drink':
+            drink = get_object_or_404(Drink, id=item_id)
+            favorite, created = Favorite.objects.get_or_create(
+                user=request.user,
+                favorite_type='drink',
+                drink=drink,
+                tea_shop=None
+            )
+        else:
+            return JsonResponse({'success': False, 'message': '無效的類型'}, status=400)
+
+        if created:
+            return JsonResponse({'success': True, 'message': '已加入收藏'})
+        else:
+            return JsonResponse({'success': False, 'message': '已經在收藏清單中'})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def remove_favorite(request):
+    """移除收藏（AJAX）"""
+    favorite_id = request.POST.get('id')
+
+    try:
+        favorite = get_object_or_404(Favorite, id=favorite_id, user=request.user)
+        favorite.delete()
+        return JsonResponse({'success': True, 'message': '已移除收藏'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+
+@login_required
+@require_POST
+def update_favorite_notes(request):
+    """更新收藏備註（AJAX）"""
+    favorite_id = request.POST.get('id')
+    notes = request.POST.get('notes', '')
+
+    try:
+        favorite = get_object_or_404(Favorite, id=favorite_id, user=request.user)
+        favorite.notes = notes
+        favorite.save()
+        return JsonResponse({'success': True, 'message': '備註已更新'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+
+@login_required
+def check_favorite(request):
+    """檢查某項目是否已收藏（AJAX）"""
+    favorite_type = request.GET.get('type')
+    item_id = request.GET.get('id')
+
+    try:
+        if favorite_type == 'shop':
+            exists = Favorite.objects.filter(
+                user=request.user,
+                favorite_type='shop',
+                tea_shop_id=item_id
+            ).exists()
+        elif favorite_type == 'drink':
+            exists = Favorite.objects.filter(
+                user=request.user,
+                favorite_type='drink',
+                drink_id=item_id
+            ).exists()
+        else:
+            return JsonResponse({'favorited': False})
+
+        return JsonResponse({'favorited': exists})
+    except Exception:
+        return JsonResponse({'favorited': False})

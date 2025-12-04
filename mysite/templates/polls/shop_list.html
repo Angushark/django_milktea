@@ -87,17 +87,58 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             transition: all 0.3s;
             border: 1px solid #f0f0f0;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
-            display: block;
+            position: relative;
         }
 
         .shop-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .shop-card-link {
             text-decoration: none;
             color: inherit;
+            display: block;
+        }
+
+        .shop-card-link:hover {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .favorite-btn:hover {
+            border-color: #e74c3c;
+            transform: scale(1.1);
+        }
+
+        .favorite-btn i {
+            color: #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .favorite-btn.favorited i {
+            color: #e74c3c;
+        }
+
+        .favorite-btn:hover i {
+            color: #e74c3c;
         }
 
         .shop-name {
@@ -204,34 +245,42 @@
         {% endif %}
 
         {% for shop in tea_shops %}
-        <a href="{% url 'shop_detail' shop.id %}" class="shop-card">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <div class="shop-name">{{ shop.name }}</div>
-                {% if shop.is_open_now == True %}
-                    <span class="badge-open"><i class="fas fa-check-circle"></i> 營業中</span>
-                {% elif shop.is_open_now == False %}
-                    <span class="badge-closed"><i class="fas fa-times-circle"></i> 休息中</span>
-                {% endif %}
-            </div>
-
-            <div class="shop-rating mb-2">
-                <i class="fas fa-star"></i> {{ shop.rating }}
-            </div>
-
-            <div class="text-muted mb-2">
-                <i class="fas fa-map-marker-alt"></i> {{ shop.address }}
-            </div>
-
-            {% if shop.phone %}
-            <div class="text-muted mb-2">
-                <i class="fas fa-phone"></i> {{ shop.phone }}
+        <div class="shop-card">
+            {% if user.is_authenticated %}
+            <div class="favorite-btn" onclick="toggleFavorite(event, 'shop', {{ shop.id }}, this)" data-shop-id="{{ shop.id }}">
+                <i class="fas fa-heart"></i>
             </div>
             {% endif %}
 
-            <div class="text-muted" style="font-size: 0.9rem;">
-                <i class="fas fa-clock"></i> {{ shop.opening_hours|truncatewords:10 }}
-            </div>
-        </a>
+            <a href="{% url 'shop_detail' shop.id %}" class="shop-card-link">
+                <div class="d-flex justify-content-between align-items-start mb-2" style="padding-right: 50px;">
+                    <div class="shop-name">{{ shop.name }}</div>
+                    {% if shop.is_open_now == True %}
+                        <span class="badge-open"><i class="fas fa-check-circle"></i> 營業中</span>
+                    {% elif shop.is_open_now == False %}
+                        <span class="badge-closed"><i class="fas fa-times-circle"></i> 休息中</span>
+                    {% endif %}
+                </div>
+
+                <div class="shop-rating mb-2">
+                    <i class="fas fa-star"></i> {{ shop.rating }}
+                </div>
+
+                <div class="text-muted mb-2">
+                    <i class="fas fa-map-marker-alt"></i> {{ shop.address }}
+                </div>
+
+                {% if shop.phone %}
+                <div class="text-muted mb-2">
+                    <i class="fas fa-phone"></i> {{ shop.phone }}
+                </div>
+                {% endif %}
+
+                <div class="text-muted" style="font-size: 0.9rem;">
+                    <i class="fas fa-clock"></i> {{ shop.opening_hours|truncatewords:10 }}
+                </div>
+            </a>
+        </div>
         {% empty %}
         <div class="alert alert-info">
             <i class="fas fa-info-circle"></i> 找不到符合條件的店家
@@ -241,5 +290,76 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 取得 CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // 切換收藏狀態
+        function toggleFavorite(event, type, id, element) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            $.ajax({
+                url: '{% url "add_favorite" %}',
+                type: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                data: {
+                    type: type,
+                    id: id
+                },
+                success: function(response) {
+                    if (response.success) {
+                        $(element).addClass('favorited');
+                        alert(response.message);
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('發生錯誤，請稍後再試。');
+                }
+            });
+        }
+
+        // 頁面載入時檢查已收藏的項目
+        $(document).ready(function() {
+            {% if user.is_authenticated %}
+            $('.favorite-btn[data-shop-id]').each(function() {
+                const shopId = $(this).data('shop-id');
+                const element = this;
+
+                $.ajax({
+                    url: '{% url "check_favorite" %}',
+                    type: 'GET',
+                    data: {
+                        type: 'shop',
+                        id: shopId
+                    },
+                    success: function(response) {
+                        if (response.favorited) {
+                            $(element).addClass('favorited');
+                        }
+                    }
+                });
+            });
+            {% endif %}
+        });
+    </script>
 </body>
 </html>

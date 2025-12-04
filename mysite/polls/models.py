@@ -99,7 +99,7 @@ class Drink(models.Model):
         ('fresh_milk', '鮮奶'),
         ('both', '兩者皆有'),
     ]
-
+    
     tea_shop = models.ForeignKey(TeaShop, on_delete=models.CASCADE, related_name='drinks', verbose_name='所屬店家')
     name = models.CharField(max_length=100, verbose_name='飲料名稱')
     description = models.TextField(blank=True, null=True, verbose_name='描述')

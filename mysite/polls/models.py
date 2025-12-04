@@ -97,7 +97,6 @@ class Drink(models.Model):
     MILK_TYPE_CHOICES = [
         ('creamer', '奶精'),
         ('fresh_milk', '鮮奶'),
-        ('both', '兩者皆有'),
     ]
     
     tea_shop = models.ForeignKey(TeaShop, on_delete=models.CASCADE, related_name='drinks', verbose_name='所屬店家')

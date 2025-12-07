@@ -49,10 +49,10 @@ class TeaShopAdmin(admin.ModelAdmin):
 @admin.register(Drink)
 class DrinkAdmin(admin.ModelAdmin):
     # 列表頁顯示的欄位
-    list_display = ['id', 'name', 'tea_shop', 'milk_type', 'price_display', 'created_at']
+    list_display = ['id', 'name', 'tea_shop', 'milk_type', 'tea_type', 'topping', 'price_display', 'created_at']
 
     # 可以篩選的欄位
-    list_filter = ['milk_type', 'tea_shop', 'created_at']
+    list_filter = ['milk_type', 'tea_type', 'topping', 'tea_shop', 'created_at']
 
     # 可以搜尋的欄位
     search_fields = ['name', 'tea_shop__name', 'description']
@@ -66,7 +66,7 @@ class DrinkAdmin(admin.ModelAdmin):
     # 詳細頁面的欄位分組
     fieldsets = (
         ('基本資料', {
-            'fields': ('tea_shop', 'name', 'description', 'milk_type')
+            'fields': ('tea_shop', 'name', 'description', 'milk_type', 'tea_type', 'topping')
         }),
         ('小杯', {
             'fields': ('has_small', 'price_small'),

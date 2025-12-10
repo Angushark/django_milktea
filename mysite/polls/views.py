@@ -76,7 +76,7 @@ def recommended_drinks(request):
     price_filter = request.GET.get('price', '')
     tea_filter = request.GET.get('tea_type', '')
     topping_filter = request.GET.get('topping', '')
-    sort_by = request.GET.get('sort', 'rating')
+    sort_by = request.GET.get('sort', 'rating_desc')  # 預設評價由高到低
 
     # 基本查詢：評分 >= 4.0 的店家飲料
     drinks = Drink.objects.filter(
@@ -115,8 +115,10 @@ def recommended_drinks(request):
         drinks = [d for d in drinks if has_price_in_range(d, 80, float('inf'))]
 
     # 排序
-    if sort_by == 'rating':
+    if sort_by == 'rating_desc' or sort_by == 'rating':
         drinks = sorted(drinks, key=lambda x: x.tea_shop.rating, reverse=True)
+    elif sort_by == 'rating_asc':
+        drinks = sorted(drinks, key=lambda x: x.tea_shop.rating)
     elif sort_by == 'price_asc':
         drinks = sorted(drinks, key=lambda x: get_min_price(x))
     elif sort_by == 'price_desc':
@@ -143,7 +145,7 @@ def nearby_shops(request):
     user_lng = request.GET.get('lng', '')
     distance_filter = request.GET.get('distance', '')
     open_now = request.GET.get('open_now', '')  # Toggle
-    sort_by = request.GET.get('sort', 'distance')
+    sort_by = request.GET.get('sort', 'distance_asc')  # 預設距離由近到遠
 
     tea_shops = TeaShop.objects.all()
 
@@ -178,9 +180,13 @@ def nearby_shops(request):
                                       if s.is_open_now() == True]
 
             # 排序
-            if sort_by == 'rating':
+            if sort_by == 'rating_desc' or sort_by == 'rating':
                 tea_shops = sorted(shops_with_distance, key=lambda x: x.rating, reverse=True)
-            else:  # distance
+            elif sort_by == 'rating_asc':
+                tea_shops = sorted(shops_with_distance, key=lambda x: x.rating)
+            elif sort_by == 'distance_desc':
+                tea_shops = sorted(shops_with_distance, key=lambda x: x.distance, reverse=True)
+            else:  # distance_asc or distance
                 tea_shops = sorted(shops_with_distance, key=lambda x: x.distance)
 
         except (ValueError, TypeError):

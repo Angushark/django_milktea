@@ -13,7 +13,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            background: linear-gradient(135deg, #D4A574 0%, #A67C52 100%);
             color: white;
             padding: 20px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -47,7 +47,7 @@
         .location-btn {
             border-radius: 25px;
             padding: 12px 30px;
-            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            background: linear-gradient(135deg, #D4A574 0%, #A67C52 100%);
             border: none;
             color: white;
             font-weight: bold;
@@ -65,12 +65,15 @@
             margin: 5px;
             border-radius: 20px;
             padding: 8px 20px;
+            border: 2px solid #D4A574 !important;
+            background: white;
+            color: #6B4423;
         }
 
         .filter-btn.active {
-            background: #74b9ff;
+            background: #D4A574;
             color: white;
-            border-color: #74b9ff;
+            border-color: #D4A574 !important;
         }
 
         .shop-card {
@@ -171,6 +174,136 @@
             border-radius: 12px;
             font-size: 0.9rem;
         }
+
+        /* Vertical Filter Layout */
+        .filter-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .filter-row:last-child {
+            border-bottom: none;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            min-width: 100px;
+            color: #495057;
+            font-size: 0.95rem;
+        }
+
+        .slider-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 180px;
+            border: 2px solid #D4A574 !important;
+            background: white;
+            color: #6B4423;
+        }
+
+        .slider-trigger:hover {
+            border-color: #A67C52 !important;
+            background: #FFF8F0;
+        }
+
+        .slider-trigger.active {
+            background: #D4A574;
+            color: white;
+            border-color: #D4A574 !important;
+        }
+
+        .sort-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Slider Modal Styles */
+        .slider-container {
+            padding: 20px 10px;
+        }
+
+        .custom-range {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .slider-value-display {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #A67C52;
+            padding: 15px;
+            background: #FFF8F0;
+            border-radius: 8px;
+        }
+
+        .slider-value-display i {
+            margin-right: 5px;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #D4A574 0%, #A67C52 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header .close {
+            color: white;
+            opacity: 0.8;
+        }
+
+        .custom-range::-webkit-slider-thumb {
+            background: #D4A574;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .custom-range::-webkit-slider-runnable-track {
+            background: linear-gradient(to right, #e9ecef 0%, #D4A574 100%);
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .custom-range::-moz-range-thumb {
+            background: #D4A574;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .custom-range::-moz-range-track {
+            background: linear-gradient(to right, #e9ecef 0%, #D4A574 100%);
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .filter-label {
+                min-width: auto;
+            }
+        }
     </style>
 </head>
 <body>
@@ -203,50 +336,52 @@
         </div>
 
         <div class="distance-filter">
-            <div class="d-flex flex-wrap align-items-center">
-                <!-- 距離篩選（修改為 0.5, 1, 3）-->
-                <span class="mr-3"><strong>距離篩選：</strong></span>
-                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance=0.5&open_now={{ open_now }}&sort={{ sort_by }}"
-                   class="btn btn-outline-primary filter-btn {% if distance_filter == '0.5' %}active{% endif %}">
-                    <i class="fas fa-walking"></i> 500公尺內
-                </a>
-                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance=1&open_now={{ open_now }}&sort={{ sort_by }}"
-                   class="btn btn-outline-primary filter-btn {% if distance_filter == '1' %}active{% endif %}">
-                    <i class="fas fa-walking"></i> 1公里內
-                </a>
-                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance=3&open_now={{ open_now }}&sort={{ sort_by }}"
-                   class="btn btn-outline-primary filter-btn {% if distance_filter == '3' %}active{% endif %}">
-                    <i class="fas fa-biking"></i> 3公里內
-                </a>
+            <!-- Row 1: 距離 (Slider) -->
+            <div class="filter-row">
+                <span class="filter-label">距離篩選：</span>
+                <button class="btn filter-btn slider-trigger" data-toggle="modal" data-target="#distanceModal">
+                    <span class="current-value">
+                        {% if distance_filter == '0.5' %}500公尺內
+                        {% elif distance_filter == '1' %}1公里內
+                        {% elif distance_filter == '3' %}3公里內
+                        {% elif distance_filter == '5' %}5公里內
+                        {% elif distance_filter == '8' %}8公里內
+                        {% else %}全部{% endif %}
+                    </span>
+                    <i class="fas fa-sliders-h ml-2"></i>
+                </button>
+            </div>
 
-                <span class="mx-3">|</span>
+            <!-- Row 2: 營業中 Toggle -->
+            <div class="filter-row">
+                <span class="filter-label">篩選：</span>
+                <button class="btn filter-btn toggle-btn {% if open_now == 'true' %}active{% endif %}"
+                        onclick="toggleOpenNowNearby()">
+                    <i class="fas fa-clock"></i> 營業中
+                </button>
+            </div>
 
-                <!-- 營業中篩選（新增）-->
-                <span class="mr-3"><strong>篩選：</strong></span>
-                {% if open_now == 'true' %}
-                    <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance={{ distance_filter }}&sort={{ sort_by }}"
-                       class="btn btn-outline-success filter-btn active">
-                        <i class="fas fa-clock"></i> 營業中
-                    </a>
-                {% else %}
-                    <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance={{ distance_filter }}&open_now=true&sort={{ sort_by }}"
-                       class="btn btn-outline-success filter-btn">
-                        <i class="fas fa-clock"></i> 營業中
-                    </a>
-                {% endif %}
-
-                <span class="mx-3">|</span>
-
-                <!-- 排序（新增評價排序）-->
-                <span class="mr-3"><strong>排序：</strong></span>
-                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance={{ distance_filter }}&open_now={{ open_now }}&sort=distance"
-                   class="btn btn-outline-info filter-btn {% if sort_by == 'distance' or not sort_by %}active{% endif %}">
-                    距離 <i class="fas fa-arrow-up"></i>
-                </a>
-                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance={{ distance_filter }}&open_now={{ open_now }}&sort=rating"
-                   class="btn btn-outline-info filter-btn {% if sort_by == 'rating' %}active{% endif %}">
-                    評價 <i class="fas fa-arrow-down"></i>
-                </a>
+            <!-- Row 3: 排序 (Two Toggle Buttons) -->
+            <div class="filter-row">
+                <span class="filter-label">排序：</span>
+                <button class="btn filter-btn sort-toggle {% if sort_by == 'distance_asc' or sort_by == 'distance' or not sort_by %}active{% endif %}"
+                        onclick="toggleSortNearby('distance')">
+                    <span>距離</span>
+                    {% if sort_by == 'distance_desc' %}
+                        <i class="fas fa-sort-amount-down ml-2"></i>
+                    {% else %}
+                        <i class="fas fa-sort-amount-up ml-2"></i>
+                    {% endif %}
+                </button>
+                <button class="btn filter-btn sort-toggle {% if sort_by == 'rating_desc' or sort_by == 'rating_asc' or sort_by == 'rating' %}active{% endif %}"
+                        onclick="toggleSortNearby('rating')">
+                    <span>評價</span>
+                    {% if sort_by == 'rating_asc' %}
+                        <i class="fas fa-sort-amount-up ml-2"></i>
+                    {% else %}
+                        <i class="fas fa-sort-amount-down ml-2"></i>
+                    {% endif %}
+                </button>
             </div>
         </div>
         {% endif %}
@@ -307,6 +442,47 @@
         {% endfor %}
     </div>
 
+    <!-- Distance Slider Modal -->
+    <div class="modal fade" id="distanceModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-map-marker-alt"></i> 選擇搜尋距離
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="slider-container">
+                        <input type="range" class="custom-range" id="distanceSlider"
+                               min="0" max="4" step="1" value="1">
+                        <div class="slider-labels">
+                            <span>500m</span>
+                            <span>1km</span>
+                            <span>3km</span>
+                            <span>5km</span>
+                            <span>8km</span>
+                        </div>
+                        <div class="slider-value-display">
+                            <i class="fas fa-walking"></i>
+                            <span id="distanceValue">1公里</span> 內
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="clearDistance()">
+                        清除篩選
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="applyDistance()">
+                        套用
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -359,6 +535,79 @@
         }
         const csrftoken = getCookie('csrftoken');
 
+        // Distance slider values
+        const distanceValues = [
+            { value: 0.5, label: '500公尺' },
+            { value: 1, label: '1公里' },
+            { value: 3, label: '3公里' },
+            { value: 5, label: '5公里' },
+            { value: 8, label: '8公里' }
+        ];
+
+        // Update display when distance slider moves
+        document.getElementById('distanceSlider').addEventListener('input', function() {
+            const index = this.value;
+            document.getElementById('distanceValue').textContent = distanceValues[index].label;
+        });
+
+        // Apply distance filter
+        function applyDistance() {
+            const index = document.getElementById('distanceSlider').value;
+            const distance = distanceValues[index].value;
+            const url = new URL(window.location);
+            url.searchParams.set('distance', distance);
+            window.location.href = url.toString();
+        }
+
+        // Clear distance filter
+        function clearDistance() {
+            const url = new URL(window.location);
+            url.searchParams.delete('distance');
+            window.location.href = url.toString();
+        }
+
+        // Toggle open now filter
+        function toggleOpenNowNearby() {
+            const url = new URL(window.location);
+            const currentOpenNow = url.searchParams.get('open_now');
+            if (currentOpenNow === 'true') {
+                url.searchParams.delete('open_now');
+            } else {
+                url.searchParams.set('open_now', 'true');
+            }
+            window.location.href = url.toString();
+        }
+
+        // Toggle sort
+        function toggleSortNearby(type) {
+            const url = new URL(window.location);
+            const currentSort = url.searchParams.get('sort');
+
+            let newSort;
+            if (type === 'distance') {
+                // 如果當前不是距離排序，則設為 distance_asc（預設由近到遠）
+                if (!currentSort || (!currentSort.includes('distance'))) {
+                    newSort = 'distance_asc';
+                } else if (currentSort === 'distance_asc') {
+                    newSort = 'distance_desc';
+                } else {
+                    newSort = 'distance_asc';
+                }
+            } else if (type === 'rating') {
+                // 如果當前不是評價排序，則設為 rating_desc（預設由高到低）
+                if (!currentSort || (!currentSort.includes('rating'))) {
+                    newSort = 'rating_desc';
+                } else if (currentSort === 'rating_desc') {
+                    newSort = 'rating_asc';
+                } else {
+                    newSort = 'rating_desc';
+                }
+            }
+
+            url.searchParams.set('sort', newSort);
+            window.location.href = url.toString();
+        }
+
         function toggleFavorite(event, type, id, element) {
             event.preventDefault();
             event.stopPropagation();
@@ -389,6 +638,17 @@
 
         // 頁面載入時檢查已收藏的項目
         $(document).ready(function() {
+            // Initialize distance slider value
+            const currentDistance = '{{ distance_filter }}';
+            if (currentDistance) {
+                const distance = parseFloat(currentDistance);
+                const index = distanceValues.findIndex(d => d.value === distance);
+                if (index >= 0) {
+                    document.getElementById('distanceSlider').value = index;
+                    document.getElementById('distanceValue').textContent = distanceValues[index].label;
+                }
+            }
+
             {% if user.is_authenticated %}
             $('.favorite-btn[data-shop-id]').each(function() {
                 const shopId = $(this).data('shop-id');

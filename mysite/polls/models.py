@@ -95,7 +95,6 @@ class TeaShop(models.Model):
 class Drink(models.Model):
     """飲料品項模型"""
     MILK_TYPE_CHOICES = [
-        ('none', '無'),
         ('creamer', '奶精'),
         ('fresh_milk', '鮮奶'),
     ]
@@ -111,7 +110,7 @@ class Drink(models.Model):
     tea_shop = models.ForeignKey(TeaShop, on_delete=models.CASCADE, related_name='drinks', verbose_name='所屬店家')
     name = models.CharField(max_length=100, verbose_name='飲料名稱')
     description = models.TextField(blank=True, null=True, verbose_name='描述')
-    milk_type = models.CharField(max_length=20, choices=MILK_TYPE_CHOICES, default='none', verbose_name='使用奶類')
+    milk_type = models.CharField(max_length=20, choices=MILK_TYPE_CHOICES, blank=True, null=True, verbose_name='使用奶類')
     tea_type = models.CharField(max_length=20, choices=TEA_TYPE_CHOICES, blank=True, null=True, verbose_name='茶類')
     topping = models.CharField(max_length=10, choices=[('yes', '有'), ('no', '無')], blank=True, null=True, verbose_name='配料')
 

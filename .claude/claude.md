@@ -64,6 +64,7 @@
 4. shop_list.html和nearby_shops.html的filter-section也要改成一排一個功能
 5. 有關評價, 價格, 距離的篩選都使用section+slider
 6. 將跟排序有關的按鈕都換成一個sort icon(可以切換 由大到小/由小到大)
+7. 測試修bug
 
 ## 目前狀態
 完成V5

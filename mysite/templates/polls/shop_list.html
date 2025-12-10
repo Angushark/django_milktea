@@ -13,7 +13,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            background: linear-gradient(135deg, #D4A574 0%, #A67C52 100%);
             color: white;
             padding: 20px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -53,7 +53,7 @@
         .search-btn {
             border-radius: 25px;
             padding: 10px 25px;
-            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            background: linear-gradient(135deg, #D4A574 0%, #A67C52 100%);
             border: none;
             color: white;
             font-weight: bold;
@@ -71,23 +71,26 @@
             margin: 5px;
             border-radius: 20px;
             padding: 8px 20px;
+            border: 2px solid #D4A574 !important;
+            background: white;
+            color: #6B4423;
         }
 
         .filter-btn.active {
-            background: #74b9ff;
+            background: #D4A574;
             color: white;
-            border-color: #74b9ff;
+            border-color: #D4A574 !important;
         }
 
         .shop-card {
             background: white;
             border-radius: 16px;
             padding: 20px;
-            margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             transition: all 0.3s;
             border: 1px solid #f0f0f0;
             position: relative;
+            height: 100%;
         }
 
         .shop-card:hover {
@@ -195,6 +198,132 @@
             color: #adb5bd;
             font-size: 3rem;
         }
+
+        /* Vertical Filter Layout */
+        .filter-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .filter-row:last-child {
+            border-bottom: none;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            min-width: 100px;
+            color: #495057;
+            font-size: 0.95rem;
+        }
+
+        .slider-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 180px;
+            border: 2px solid #D4A574 !important;
+            background: white;
+            color: #6B4423;
+        }
+
+        .slider-trigger:hover {
+            border-color: #A67C52 !important;
+            background: #FFF8F0;
+        }
+
+        .slider-trigger.active {
+            background: #D4A574;
+            color: white;
+            border-color: #D4A574 !important;
+        }
+
+        .sort-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Slider Modal Styles */
+        .slider-container {
+            padding: 20px 10px;
+        }
+
+        .custom-range {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .slider-value-display {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #A67C52;
+            padding: 15px;
+            background: #FFF8F0;
+            border-radius: 8px;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #D4A574 0%, #A67C52 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header .close {
+            color: white;
+            opacity: 0.8;
+        }
+
+        .custom-range::-webkit-slider-thumb {
+            background: #D4A574;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .custom-range::-webkit-slider-runnable-track {
+            background: linear-gradient(to right, #e9ecef 0%, #D4A574 100%);
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .custom-range::-moz-range-thumb {
+            background: #D4A574;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .custom-range::-moz-range-track {
+            background: linear-gradient(to right, #e9ecef 0%, #D4A574 100%);
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .filter-label {
+                min-width: auto;
+            }
+        }
     </style>
 </head>
 <body>
@@ -228,49 +357,37 @@
         </div>
 
         <div class="filter-section">
-            <div class="d-flex flex-wrap align-items-center">
-                <span class="mr-3"><strong>篩選：</strong></span>
+            <!-- Row 1: 營業中 Toggle -->
+            <div class="filter-row">
+                <span class="filter-label">篩選：</span>
+                <button class="btn filter-btn toggle-btn {% if open_now == 'true' %}active{% endif %}"
+                        onclick="toggleOpenNow()">
+                    <i class="fas fa-clock"></i> 營業中
+                </button>
+            </div>
 
-                <!-- 營業中 Toggle -->
-                {% if open_now == 'true' %}
-                    <a href="?rating={{ rating_filter }}&sort={{ sort_by }}&search={{ search_query }}"
-                       class="btn btn-outline-success filter-btn active">
-                        <i class="fas fa-clock"></i> 營業中
-                    </a>
-                {% else %}
-                    <a href="?open_now=true&rating={{ rating_filter }}&sort={{ sort_by }}&search={{ search_query }}"
-                       class="btn btn-outline-success filter-btn">
-                        <i class="fas fa-clock"></i> 營業中
-                    </a>
-                {% endif %}
+            <!-- Row 2: 評價 (Slider Trigger) -->
+            <div class="filter-row">
+                <span class="filter-label">評價：</span>
+                <button class="btn filter-btn slider-trigger" data-toggle="modal" data-target="#ratingModal">
+                    <span class="current-value">
+                        {% if rating_filter %}{{ rating_filter }}★以上{% else %}全部{% endif %}
+                    </span>
+                    <i class="fas fa-sliders-h ml-2"></i>
+                </button>
+            </div>
 
-                <!-- 評價篩選（新增 3.5）-->
-                <a href="?rating=4.5&open_now={{ open_now }}&sort={{ sort_by }}&search={{ search_query }}"
-                   class="btn btn-outline-primary filter-btn {% if rating_filter == '4.5' %}active{% endif %}">
-                    <i class="fas fa-star"></i> 4.5星以上
-                </a>
-                <a href="?rating=4.0&open_now={{ open_now }}&sort={{ sort_by }}&search={{ search_query }}"
-                   class="btn btn-outline-primary filter-btn {% if rating_filter == '4.0' %}active{% endif %}">
-                    <i class="fas fa-star"></i> 4.0星以上
-                </a>
-                <a href="?rating=3.5&open_now={{ open_now }}&sort={{ sort_by }}&search={{ search_query }}"
-                   class="btn btn-outline-primary filter-btn {% if rating_filter == '3.5' %}active{% endif %}">
-                    <i class="fas fa-star"></i> 3.5星以上
-                </a>
-                <!-- 移除"全部"按鈕 -->
-
-                <span class="mx-3">|</span>
-
-                <!-- 排序（移除"店名"）-->
-                <span class="mr-3"><strong>排序：</strong></span>
-                <a href="?rating={{ rating_filter }}&open_now={{ open_now }}&sort=rating_desc&search={{ search_query }}"
-                   class="btn btn-outline-info filter-btn {% if sort_by == 'rating_desc' or sort_by == '-rating' %}active{% endif %}">
-                    評分 <i class="fas fa-arrow-down"></i>
-                </a>
-                <a href="?rating={{ rating_filter }}&open_now={{ open_now }}&sort=rating_asc&search={{ search_query }}"
-                   class="btn btn-outline-info filter-btn {% if sort_by == 'rating_asc' %}active{% endif %}">
-                    評分 <i class="fas fa-arrow-up"></i>
-                </a>
+            <!-- Row 3: 排序 (Single Toggle Icon) -->
+            <div class="filter-row">
+                <span class="filter-label">排序：</span>
+                <button class="btn filter-btn sort-toggle" onclick="toggleSort()">
+                    <span>評分</span>
+                    {% if sort_by == 'rating_asc' %}
+                        <i class="fas fa-sort-amount-up ml-2"></i>
+                    {% else %}
+                        <i class="fas fa-sort-amount-down ml-2"></i>
+                    {% endif %}
+                </button>
             </div>
         </div>
 
@@ -280,47 +397,94 @@
         </div>
         {% endif %}
 
+        <div class="row">
         {% for shop in tea_shops %}
-        <div class="shop-card">
-            {% if user.is_authenticated %}
-            <div class="favorite-btn" onclick="toggleFavorite(event, 'shop', {{ shop.id }}, this)" data-shop-id="{{ shop.id }}">
-                <i class="fas fa-heart"></i>
-            </div>
-            {% endif %}
+            <div class="col-12 col-md-6 mb-4">
+                <div class="shop-card">
+                    {% if user.is_authenticated %}
+                    <div class="favorite-btn" onclick="toggleFavorite(event, 'shop', {{ shop.id }}, this)" data-shop-id="{{ shop.id }}">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    {% endif %}
 
-            <a href="{% url 'shop_detail' shop.id %}" class="shop-card-link">
-                <!-- 照片區域 -->
-                {% load static %}
-                <div class="shop-image-container mb-3">
-                    <img src="{% static 'shop_images/' %}{{ shop.place_id }}.jpg"
-                         alt="{{ shop.name }}"
-                         class="shop-image"
-                         onerror="this.onerror=null; this.src='{% static 'shop_images/' %}{{ shop.place_id }}.png'; if(this.src.endsWith('.png') && this.complete && this.naturalHeight === 0) { this.style.display='none'; this.nextElementSibling.style.display='flex'; }">
-                    <div class="shop-image-placeholder" style="display: none;">
-                        <i class="fas fa-store"></i>
+                    <a href="{% url 'shop_detail' shop.id %}" class="shop-card-link">
+                        <!-- 照片區域 -->
+                        {% load static %}
+                        <div class="shop-image-container mb-3">
+                            <img src="{% static 'shop_images/' %}{{ shop.place_id }}.jpg"
+                                 alt="{{ shop.name }}"
+                                 class="shop-image"
+                                 onerror="this.onerror=null; this.src='{% static 'shop_images/' %}{{ shop.place_id }}.png'; if(this.src.endsWith('.png') && this.complete && this.naturalHeight === 0) { this.style.display='none'; this.nextElementSibling.style.display='flex'; }">
+                            <div class="shop-image-placeholder" style="display: none;">
+                                <i class="fas fa-store"></i>
+                            </div>
+                        </div>
+
+                        <!-- 簡化的店家資訊 -->
+                        <div class="d-flex justify-content-between align-items-start mb-2" style="padding-right: 50px;">
+                            <div class="shop-name">{{ shop.name }}</div>
+                            {% if shop.is_open_now == True %}
+                                <span class="badge-open"><i class="fas fa-check-circle"></i> 營業中</span>
+                            {% elif shop.is_open_now == False %}
+                                <span class="badge-closed"><i class="fas fa-times-circle"></i> 休息中</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="shop-rating mb-2">
+                            <i class="fas fa-star"></i> {{ shop.rating }}
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> 找不到符合條件的店家
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+
+    <!-- Rating Slider Modal -->
+    <div class="modal fade" id="ratingModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-star"></i> 選擇最低評價
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="slider-container">
+                        <input type="range" class="custom-range" id="ratingSlider"
+                               min="0" max="4" step="1" value="2">
+                        <div class="slider-labels">
+                            <span>3.0★</span>
+                            <span>3.5★</span>
+                            <span>4.0★</span>
+                            <span>4.5★</span>
+                            <span>5.0★</span>
+                        </div>
+                        <div class="slider-value-display">
+                            <i class="fas fa-star"></i>
+                            <span id="ratingValue">4.0</span> 星以上
+                        </div>
                     </div>
                 </div>
-
-                <!-- 簡化的店家資訊 -->
-                <div class="d-flex justify-content-between align-items-start mb-2" style="padding-right: 50px;">
-                    <div class="shop-name">{{ shop.name }}</div>
-                    {% if shop.is_open_now == True %}
-                        <span class="badge-open"><i class="fas fa-check-circle"></i> 營業中</span>
-                    {% elif shop.is_open_now == False %}
-                        <span class="badge-closed"><i class="fas fa-times-circle"></i> 休息中</span>
-                    {% endif %}
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="clearRating()">
+                        清除篩選
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="applyRating()">
+                        套用
+                    </button>
                 </div>
-
-                <div class="shop-rating mb-2">
-                    <i class="fas fa-star"></i> {{ shop.rating }}
-                </div>
-            </a>
+            </div>
         </div>
-        {% empty %}
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i> 找不到符合條件的店家
-        </div>
-        {% endfor %}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -342,6 +506,53 @@
             return cookieValue;
         }
         const csrftoken = getCookie('csrftoken');
+
+        // Rating slider values
+        const ratingValues = [3.0, 3.5, 4.0, 4.5, 5.0];
+
+        // Update display when slider moves
+        document.getElementById('ratingSlider').addEventListener('input', function() {
+            const index = this.value;
+            const rating = ratingValues[index];
+            document.getElementById('ratingValue').textContent = rating;
+        });
+
+        // Apply rating filter
+        function applyRating() {
+            const index = document.getElementById('ratingSlider').value;
+            const rating = ratingValues[index];
+            const url = new URL(window.location);
+            url.searchParams.set('rating', rating);
+            window.location.href = url.toString();
+        }
+
+        // Clear rating filter
+        function clearRating() {
+            const url = new URL(window.location);
+            url.searchParams.delete('rating');
+            window.location.href = url.toString();
+        }
+
+        // Toggle sort direction
+        function toggleSort() {
+            const url = new URL(window.location);
+            const currentSort = url.searchParams.get('sort') || 'rating_desc';
+            const newSort = currentSort === 'rating_asc' ? 'rating_desc' : 'rating_asc';
+            url.searchParams.set('sort', newSort);
+            window.location.href = url.toString();
+        }
+
+        // Toggle open now filter
+        function toggleOpenNow() {
+            const url = new URL(window.location);
+            const currentOpenNow = url.searchParams.get('open_now');
+            if (currentOpenNow === 'true') {
+                url.searchParams.delete('open_now');
+            } else {
+                url.searchParams.set('open_now', 'true');
+            }
+            window.location.href = url.toString();
+        }
 
         // 切換收藏狀態
         function toggleFavorite(event, type, id, element) {
@@ -374,6 +585,17 @@
 
         // 頁面載入時檢查已收藏的項目
         $(document).ready(function() {
+            // Initialize rating slider value
+            const currentRating = '{{ rating_filter }}';
+            if (currentRating) {
+                const rating = parseFloat(currentRating);
+                const index = ratingValues.indexOf(rating);
+                if (index >= 0) {
+                    document.getElementById('ratingSlider').value = index;
+                    document.getElementById('ratingValue').textContent = rating;
+                }
+            }
+
             {% if user.is_authenticated %}
             $('.favorite-btn[data-shop-id]').each(function() {
                 const shopId = $(this).data('shop-id');

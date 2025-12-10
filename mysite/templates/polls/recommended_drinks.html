@@ -13,7 +13,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            background: linear-gradient(135deg, #D4A574 0%, #A67C52 100%);
             color: white;
             padding: 20px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -131,12 +131,157 @@
             border-radius: 20px;
             padding: 8px 20px;
             font-size: 0.9rem;
+            border: 2px solid #D4A574 !important;
+            background: white;
+            color: #6B4423;
         }
 
         .filter-btn.active {
-            background: #74b9ff;
+            background: #D4A574;
             color: white;
-            border-color: #74b9ff;
+            border-color: #D4A574 !important;
+        }
+
+        /* Vertical Filter Layout */
+        .filter-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .filter-row:last-child {
+            border-bottom: none;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            min-width: 100px;
+            color: #495057;
+            font-size: 0.95rem;
+        }
+
+        .slider-trigger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: space-between;
+            min-width: 180px;
+            border: 2px solid #D4A574 !important;
+            background: white;
+            color: #6B4423;
+        }
+
+        .slider-trigger:hover {
+            border-color: #A67C52 !important;
+            background: #FFF8F0;
+        }
+
+        .slider-trigger.active {
+            background: #D4A574;
+            color: white;
+            border-color: #D4A574 !important;
+        }
+
+        .sort-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-buttons-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-buttons-group .filter-btn {
+            margin: 0;
+            font-size: 0.9rem;
+            padding: 6px 16px;
+        }
+
+        /* Slider Modal Styles */
+        .slider-container {
+            padding: 20px 10px;
+        }
+
+        .custom-range {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .slider-value-display {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #A67C52;
+            padding: 15px;
+            background: #FFF8F0;
+            border-radius: 8px;
+        }
+
+        .slider-value-display i {
+            margin-right: 5px;
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #D4A574 0%, #A67C52 100%);
+            color: white;
+            border-bottom: none;
+        }
+
+        .modal-header .close {
+            color: white;
+            opacity: 0.8;
+        }
+
+        .custom-range::-webkit-slider-thumb {
+            background: #D4A574;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .custom-range::-webkit-slider-runnable-track {
+            background: linear-gradient(to right, #e9ecef 0%, #D4A574 100%);
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .custom-range::-moz-range-thumb {
+            background: #D4A574;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .custom-range::-moz-range-track {
+            background: linear-gradient(to right, #e9ecef 0%, #D4A574 100%);
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .filter-label {
+                min-width: auto;
+            }
         }
     </style>
 </head>
@@ -158,106 +303,97 @@
     <div class="container">
         <!-- 篩選區域 -->
         <div class="filter-section">
-            <!-- 第一行：店家評價、奶類、價格 -->
-            <div class="d-flex flex-wrap align-items-center">
-                <span class="mr-3"><strong>店家評價：</strong></span>
-                <a href="?rating=4.5&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-primary filter-btn {% if rating_filter == '4.5' %}active{% endif %}">
-                    <i class="fas fa-star"></i> 4.5星以上
-                </a>
-                <a href="?rating=4.0&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-primary filter-btn {% if rating_filter == '4.0' %}active{% endif %}">
-                    <i class="fas fa-star"></i> 4.0星以上
-                </a>
-                <a href="?rating=3.5&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-primary filter-btn {% if rating_filter == '3.5' %}active{% endif %}">
-                    <i class="fas fa-star"></i> 3.5星以上
-                </a>
-
-                <span class="mx-3">|</span>
-
-                <span class="mr-3"><strong>奶類：</strong></span>
-                <a href="?rating={{ rating_filter }}&milk_type=fresh_milk&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-success filter-btn {% if milk_filter == 'fresh_milk' %}active{% endif %}">
-                    <i class="fas fa-glass-whiskey"></i> 鮮奶
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type=creamer&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-warning filter-btn {% if milk_filter == 'creamer' %}active{% endif %}">
-                    <i class="fas fa-coffee"></i> 奶精
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type=none&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-secondary filter-btn {% if milk_filter == 'none' %}active{% endif %}">
-                    無
-                </a>
-
-                <span class="mx-3">|</span>
-
-                <span class="mr-3"><strong>價格：</strong></span>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price=under_50&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-info filter-btn {% if price_filter == 'under_50' %}active{% endif %}">
-                    &lt;50
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price=50_80&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-info filter-btn {% if price_filter == '50_80' %}active{% endif %}">
-                    50-80
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price=over_80&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-info filter-btn {% if price_filter == 'over_80' %}active{% endif %}">
-                    ≥80
-                </a>
+            <!-- Row 1: 店家評價 (Slider) -->
+            <div class="filter-row">
+                <span class="filter-label">店家評價：</span>
+                <button class="btn filter-btn slider-trigger" data-toggle="modal" data-target="#ratingModal">
+                    <span class="current-value">
+                        {% if rating_filter %}{{ rating_filter }}★以上{% else %}全部{% endif %}
+                    </span>
+                    <i class="fas fa-sliders-h ml-2"></i>
+                </button>
             </div>
 
-            <!-- 第二行：茶類、配料、排序 -->
-            <div class="d-flex flex-wrap align-items-center mt-3">
-                <span class="mr-3"><strong>茶類：</strong></span>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type=black_tea&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-danger filter-btn {% if tea_filter == 'black_tea' %}active{% endif %}">
-                    紅茶
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type=green_tea&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-success filter-btn {% if tea_filter == 'green_tea' %}active{% endif %}">
-                    綠茶
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type=oolong_tea&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-warning filter-btn {% if tea_filter == 'oolong_tea' %}active{% endif %}">
-                    烏龍茶
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type=blue_tea&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-primary filter-btn {% if tea_filter == 'blue_tea' %}active{% endif %}">
-                    青茶
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type=matcha&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-info filter-btn {% if tea_filter == 'matcha' %}active{% endif %}">
-                    抹茶
-                </a>
+            <!-- Row 2: 價格 (Slider) -->
+            <div class="filter-row">
+                <span class="filter-label">價格：</span>
+                <button class="btn filter-btn slider-trigger" data-toggle="modal" data-target="#priceModal">
+                    <span class="current-value">
+                        {% if price_filter == 'under_50' %}&lt;50元
+                        {% elif price_filter == '50_80' %}50-80元
+                        {% elif price_filter == 'over_80' %}≥80元
+                        {% else %}全部{% endif %}
+                    </span>
+                    <i class="fas fa-sliders-h ml-2"></i>
+                </button>
+            </div>
 
-                <span class="mx-3">|</span>
+            <!-- Row 3: 奶類 (Buttons) -->
+            <div class="filter-row">
+                <span class="filter-label">奶類：</span>
+                <div class="filter-buttons-group">
+                    <a href="?rating={{ rating_filter }}{% if milk_filter != 'fresh_milk' %}&milk_type=fresh_milk{% endif %}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if milk_filter == 'fresh_milk' %}active{% endif %}">
+                        鮮奶
+                    </a>
+                    <a href="?rating={{ rating_filter }}{% if milk_filter != 'creamer' %}&milk_type=creamer{% endif %}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if milk_filter == 'creamer' %}active{% endif %}">
+                        奶精
+                    </a>
+                </div>
+            </div>
 
-                <span class="mr-3"><strong>配料：</strong></span>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping=yes&sort={{ sort_by }}"
-                   class="btn btn-outline-secondary filter-btn {% if topping_filter == 'yes' %}active{% endif %}">
-                    有
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping=no&sort={{ sort_by }}"
-                   class="btn btn-outline-secondary filter-btn {% if topping_filter == 'no' %}active{% endif %}">
-                    無
-                </a>
+            <!-- Row 4: 茶類 (Buttons) -->
+            <div class="filter-row">
+                <span class="filter-label">茶類：</span>
+                <div class="filter-buttons-group">
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'black_tea' %}&tea_type=black_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'black_tea' %}active{% endif %}">紅茶</a>
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'green_tea' %}&tea_type=green_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'green_tea' %}active{% endif %}">綠茶</a>
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'oolong_tea' %}&tea_type=oolong_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'oolong_tea' %}active{% endif %}">烏龍茶</a>
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'blue_tea' %}&tea_type=blue_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'blue_tea' %}active{% endif %}">青茶</a>
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'matcha' %}&tea_type=matcha{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'matcha' %}active{% endif %}">抹茶</a>
+                </div>
+            </div>
 
-                <span class="mx-3">|</span>
+            <!-- Row 5: 配料 (Buttons) -->
+            <div class="filter-row">
+                <span class="filter-label">配料：</span>
+                <div class="filter-buttons-group">
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}{% if topping_filter != 'yes' %}&topping=yes{% endif %}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if topping_filter == 'yes' %}active{% endif %}">有</a>
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}{% if topping_filter != 'no' %}&topping=no{% endif %}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if topping_filter == 'no' %}active{% endif %}">無</a>
+                </div>
+            </div>
 
-                <span class="mr-3"><strong>排序：</strong></span>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort=rating"
-                   class="btn btn-outline-primary filter-btn {% if sort_by == 'rating' or not sort_by %}active{% endif %}">
-                    評價 <i class="fas fa-arrow-down"></i>
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort=price_asc"
-                   class="btn btn-outline-primary filter-btn {% if sort_by == 'price_asc' %}active{% endif %}">
-                    價格 <i class="fas fa-arrow-up"></i>
-                </a>
-                <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort=price_desc"
-                   class="btn btn-outline-primary filter-btn {% if sort_by == 'price_desc' %}active{% endif %}">
-                    價格 <i class="fas fa-arrow-down"></i>
-                </a>
+            <!-- Row 6: 排序 (Toggle Icons) -->
+            <div class="filter-row">
+                <span class="filter-label">排序：</span>
+                <button class="btn filter-btn sort-toggle {% if sort_by == 'rating_desc' or sort_by == 'rating_asc' or sort_by == 'rating' or not sort_by %}active{% endif %}"
+                        onclick="toggleSort('rating')">
+                    <span>評價</span>
+                    {% if sort_by == 'rating_asc' %}
+                        <i class="fas fa-sort-amount-up ml-2"></i>
+                    {% else %}
+                        <i class="fas fa-sort-amount-down ml-2"></i>
+                    {% endif %}
+                </button>
+                <button class="btn filter-btn sort-toggle {% if sort_by == 'price_asc' or sort_by == 'price_desc' %}active{% endif %}"
+                        onclick="toggleSort('price')">
+                    <span>價格</span>
+                    {% if sort_by == 'price_asc' %}
+                        <i class="fas fa-sort-amount-up ml-2"></i>
+                    {% elif sort_by == 'price_desc' %}
+                        <i class="fas fa-sort-amount-down ml-2"></i>
+                    {% else %}
+                        <i class="fas fa-sort ml-2"></i>
+                    {% endif %}
+                </button>
             </div>
         </div>
 
@@ -293,22 +429,43 @@
                     </div>
                     {% endif %}
 
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="drink-price">{{ drink.get_price_range }}</div>
+                    <!-- 標籤區域 -->
+                    <div class="mb-3" style="display: flex; flex-wrap: wrap; gap: 6px;">
                         {% if drink.milk_type %}
-                        <span class="badge badge-info badge-milk">
-                            {% if drink.milk_type == 'creamer' %}奶精
-                            {% elif drink.milk_type == 'fresh_milk' %}鮮奶
-                            {% elif drink.milk_type == 'none' %}無奶
+                        <span class="badge badge-info" style="font-size: 0.85rem;">
+                            {% if drink.milk_type == 'creamer' %}<i class="fas fa-coffee"></i> 奶精
+                            {% elif drink.milk_type == 'fresh_milk' %}<i class="fas fa-glass-whiskey"></i> 鮮奶
+                            {% endif %}
+                        </span>
+                        {% endif %}
+                        {% if drink.tea_type %}
+                        <span class="badge badge-success" style="font-size: 0.85rem;">
+                            <i class="fas fa-leaf"></i>
+                            {% if drink.tea_type == 'black_tea' %}紅茶
+                            {% elif drink.tea_type == 'green_tea' %}綠茶
+                            {% elif drink.tea_type == 'oolong_tea' %}烏龍茶
+                            {% elif drink.tea_type == 'blue_tea' %}青茶
+                            {% elif drink.tea_type == 'matcha' %}抹茶
+                            {% endif %}
+                        </span>
+                        {% endif %}
+                        {% if drink.topping %}
+                        <span class="badge badge-warning" style="font-size: 0.85rem;">
+                            {% if drink.topping == 'yes' %}<i class="fas fa-plus-circle"></i> 有配料
+                            {% elif drink.topping == 'no' %}<i class="fas fa-minus-circle"></i> 無配料
                             {% endif %}
                         </span>
                         {% endif %}
                     </div>
 
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="drink-price">{{ drink.get_price_range }}</div>
+                    </div>
+
                     <div class="mt-3">
-                        <a href="https://www.google.com/maps/place/?q=place_id:{{ drink.tea_shop.place_id }}"
-                           target="_blank" class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-map"></i> 查看店家位置
+                        <a href="{% url 'shop_detail' drink.tea_shop.id %}"
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-store"></i> 查看店家詳細資訊
                         </a>
                     </div>
                 </div>
@@ -320,6 +477,86 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
+    </div>
+
+    <!-- Rating Slider Modal -->
+    <div class="modal fade" id="ratingModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-star"></i> 選擇最低評價
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="slider-container">
+                        <input type="range" class="custom-range" id="ratingSlider"
+                               min="0" max="4" step="1" value="2">
+                        <div class="slider-labels">
+                            <span>3.0★</span>
+                            <span>3.5★</span>
+                            <span>4.0★</span>
+                            <span>4.5★</span>
+                            <span>5.0★</span>
+                        </div>
+                        <div class="slider-value-display">
+                            <i class="fas fa-star"></i>
+                            <span id="ratingValue">4.0</span> 星以上
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="clearRating()">
+                        清除篩選
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="applyRating()">
+                        套用
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Price Slider Modal -->
+    <div class="modal fade" id="priceModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-dollar-sign"></i> 選擇價格範圍
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="slider-container">
+                        <input type="range" class="custom-range" id="priceSlider"
+                               min="0" max="2" step="1" value="1">
+                        <div class="slider-labels">
+                            <span>&lt;50元</span>
+                            <span>50-80元</span>
+                            <span>≥80元</span>
+                        </div>
+                        <div class="slider-value-display">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span id="priceValue">50-80元</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="clearPrice()">
+                        清除篩選
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="applyPrice()">
+                        套用
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -342,6 +579,91 @@
             return cookieValue;
         }
         const csrftoken = getCookie('csrftoken');
+
+        // Rating slider values
+        const ratingValues = [3.0, 3.5, 4.0, 4.5, 5.0];
+
+        // Update display when rating slider moves
+        document.getElementById('ratingSlider').addEventListener('input', function() {
+            const index = this.value;
+            const rating = ratingValues[index];
+            document.getElementById('ratingValue').textContent = rating;
+        });
+
+        // Apply rating filter
+        function applyRating() {
+            const index = document.getElementById('ratingSlider').value;
+            const rating = ratingValues[index];
+            const url = new URL(window.location);
+            url.searchParams.set('rating', rating);
+            window.location.href = url.toString();
+        }
+
+        // Clear rating filter
+        function clearRating() {
+            const url = new URL(window.location);
+            url.searchParams.delete('rating');
+            window.location.href = url.toString();
+        }
+
+        // Price slider values
+        const priceRanges = [
+            { value: 'under_50', label: '<50元' },
+            { value: '50_80', label: '50-80元' },
+            { value: 'over_80', label: '≥80元' }
+        ];
+
+        // Update display when price slider moves
+        document.getElementById('priceSlider').addEventListener('input', function() {
+            const index = this.value;
+            document.getElementById('priceValue').textContent = priceRanges[index].label;
+        });
+
+        // Apply price filter
+        function applyPrice() {
+            const index = document.getElementById('priceSlider').value;
+            const priceValue = priceRanges[index].value;
+            const url = new URL(window.location);
+            url.searchParams.set('price', priceValue);
+            window.location.href = url.toString();
+        }
+
+        // Clear price filter
+        function clearPrice() {
+            const url = new URL(window.location);
+            url.searchParams.delete('price');
+            window.location.href = url.toString();
+        }
+
+        // Toggle sort
+        function toggleSort(type) {
+            const url = new URL(window.location);
+            const currentSort = url.searchParams.get('sort');
+
+            let newSort;
+            if (type === 'rating') {
+                // 如果當前不是評價排序，則設為 rating_desc（預設由高到低）
+                if (!currentSort || (!currentSort.includes('rating'))) {
+                    newSort = 'rating_desc';
+                } else if (currentSort === 'rating_desc' || currentSort === 'rating') {
+                    newSort = 'rating_asc';
+                } else {
+                    newSort = 'rating_desc';
+                }
+            } else if (type === 'price') {
+                // 如果當前不是價格排序，則設為 price_asc（預設由低到高）
+                if (!currentSort || (!currentSort.includes('price'))) {
+                    newSort = 'price_asc';
+                } else if (currentSort === 'price_asc') {
+                    newSort = 'price_desc';
+                } else {
+                    newSort = 'price_asc';
+                }
+            }
+
+            url.searchParams.set('sort', newSort);
+            window.location.href = url.toString();
+        }
 
         // 切換收藏狀態
         function toggleFavorite(event, type, id, element) {
@@ -374,6 +696,27 @@
 
         // 頁面載入時檢查已收藏的項目
         $(document).ready(function() {
+            // Initialize rating slider value
+            const currentRating = '{{ rating_filter }}';
+            if (currentRating) {
+                const rating = parseFloat(currentRating);
+                const index = ratingValues.indexOf(rating);
+                if (index >= 0) {
+                    document.getElementById('ratingSlider').value = index;
+                    document.getElementById('ratingValue').textContent = rating;
+                }
+            }
+
+            // Initialize price slider value
+            const currentPrice = '{{ price_filter }}';
+            if (currentPrice) {
+                const index = priceRanges.findIndex(p => p.value === currentPrice);
+                if (index >= 0) {
+                    document.getElementById('priceSlider').value = index;
+                    document.getElementById('priceValue').textContent = priceRanges[index].label;
+                }
+            }
+
             {% if user.is_authenticated %}
             $('.favorite-btn[data-drink-id]').each(function() {
                 const drinkId = $(this).data('drink-id');

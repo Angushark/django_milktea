@@ -13,7 +13,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
             color: white;
             padding: 20px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -47,7 +47,7 @@
         .location-btn {
             border-radius: 25px;
             padding: 12px 30px;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
             border: none;
             color: white;
             font-weight: bold;
@@ -68,9 +68,9 @@
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: #74b9ff;
             color: white;
-            border-color: #4facfe;
+            border-color: #74b9ff;
         }
 
         .shop-card {
@@ -204,22 +204,48 @@
 
         <div class="distance-filter">
             <div class="d-flex flex-wrap align-items-center">
+                <!-- 距離篩選（修改為 0.5, 1, 3）-->
                 <span class="mr-3"><strong>距離篩選：</strong></span>
-                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance=1"
+                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance=0.5&open_now={{ open_now }}&sort={{ sort_by }}"
+                   class="btn btn-outline-primary filter-btn {% if distance_filter == '0.5' %}active{% endif %}">
+                    <i class="fas fa-walking"></i> 500公尺內
+                </a>
+                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance=1&open_now={{ open_now }}&sort={{ sort_by }}"
                    class="btn btn-outline-primary filter-btn {% if distance_filter == '1' %}active{% endif %}">
                     <i class="fas fa-walking"></i> 1公里內
                 </a>
-                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance=3"
+                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance=3&open_now={{ open_now }}&sort={{ sort_by }}"
                    class="btn btn-outline-primary filter-btn {% if distance_filter == '3' %}active{% endif %}">
                     <i class="fas fa-biking"></i> 3公里內
                 </a>
-                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance=5"
-                   class="btn btn-outline-primary filter-btn {% if distance_filter == '5' %}active{% endif %}">
-                    <i class="fas fa-car"></i> 5公里內
+
+                <span class="mx-3">|</span>
+
+                <!-- 營業中篩選（新增）-->
+                <span class="mr-3"><strong>篩選：</strong></span>
+                {% if open_now == 'true' %}
+                    <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance={{ distance_filter }}&sort={{ sort_by }}"
+                       class="btn btn-outline-success filter-btn active">
+                        <i class="fas fa-clock"></i> 營業中
+                    </a>
+                {% else %}
+                    <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance={{ distance_filter }}&open_now=true&sort={{ sort_by }}"
+                       class="btn btn-outline-success filter-btn">
+                        <i class="fas fa-clock"></i> 營業中
+                    </a>
+                {% endif %}
+
+                <span class="mx-3">|</span>
+
+                <!-- 排序（新增評價排序）-->
+                <span class="mr-3"><strong>排序：</strong></span>
+                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance={{ distance_filter }}&open_now={{ open_now }}&sort=distance"
+                   class="btn btn-outline-info filter-btn {% if sort_by == 'distance' or not sort_by %}active{% endif %}">
+                    距離 <i class="fas fa-arrow-up"></i>
                 </a>
-                <a href="?lat={{ user_lat }}&lng={{ user_lng }}"
-                   class="btn btn-outline-secondary filter-btn {% if not distance_filter %}active{% endif %}">
-                    全部
+                <a href="?lat={{ user_lat }}&lng={{ user_lng }}&distance={{ distance_filter }}&open_now={{ open_now }}&sort=rating"
+                   class="btn btn-outline-info filter-btn {% if sort_by == 'rating' %}active{% endif %}">
+                    評價 <i class="fas fa-arrow-down"></i>
                 </a>
             </div>
         </div>

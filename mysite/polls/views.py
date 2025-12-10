@@ -23,8 +23,8 @@ def shop_list(request):
 
     # 取得篩選參數
     rating_filter = request.GET.get('rating', '')
-    open_now = request.GET.get('open_now', '')
-    sort_by = request.GET.get('sort', '-rating')
+    open_now = request.GET.get('open_now', '')  # 'true' or ''
+    sort_by = request.GET.get('sort', 'rating_desc')
 
     # 基本查詢
     tea_shops = TeaShop.objects.all()
@@ -44,19 +44,17 @@ def shop_list(request):
         except ValueError:
             pass
 
-    # 營業中篩選
-    if open_now:
-        tea_shops = [shop for shop in tea_shops if shop.is_open_now() == True]
-    else:
-        tea_shops = list(tea_shops)
+    tea_shops = list(tea_shops)
 
-    # 排序
+    # 營業中篩選（Toggle 機制）
+    if open_now == 'true':
+        tea_shops = [shop for shop in tea_shops if shop.is_open_now() == True]
+
+    # 排序（移除 name）
     if sort_by == 'rating_asc':
         tea_shops = sorted(tea_shops, key=lambda x: x.rating)
-    elif sort_by == 'rating_desc' or sort_by == '-rating':
+    else:  # rating_desc
         tea_shops = sorted(tea_shops, key=lambda x: x.rating, reverse=True)
-    elif sort_by == 'name':
-        tea_shops = sorted(tea_shops, key=lambda x: x.name)
 
     context = {
         'tea_shops': tea_shops,
@@ -72,13 +70,67 @@ def shop_list(request):
 
 def recommended_drinks(request):
     """推薦品項頁面"""
+    # 取得篩選參數
+    rating_filter = request.GET.get('rating', '')
+    milk_filter = request.GET.get('milk_type', '')
+    price_filter = request.GET.get('price', '')
+    tea_filter = request.GET.get('tea_type', '')
+    topping_filter = request.GET.get('topping', '')
+    sort_by = request.GET.get('sort', 'rating')
+
+    # 基本查詢：評分 >= 4.0 的店家飲料
     drinks = Drink.objects.filter(
         tea_shop__rating__gte=4.0
-    ).select_related('tea_shop').order_by('-tea_shop__rating')[:20]
+    ).select_related('tea_shop')
+
+    # 評價篩選（店家評分）
+    if rating_filter:
+        try:
+            min_rating = float(rating_filter)
+            drinks = drinks.filter(tea_shop__rating__gte=min_rating)
+        except ValueError:
+            pass
+
+    # 奶類篩選
+    if milk_filter:
+        drinks = drinks.filter(milk_type=milk_filter)
+
+    # 茶類篩選
+    if tea_filter:
+        drinks = drinks.filter(tea_type=tea_filter)
+
+    # 配料篩選
+    if topping_filter:
+        drinks = drinks.filter(topping=topping_filter)
+
+    # 轉換為列表以便價格篩選和排序
+    drinks = list(drinks)
+
+    # 價格篩選
+    if price_filter == 'under_50':
+        drinks = [d for d in drinks if has_price_in_range(d, 0, 50)]
+    elif price_filter == '50_80':
+        drinks = [d for d in drinks if has_price_in_range(d, 50, 80)]
+    elif price_filter == 'over_80':
+        drinks = [d for d in drinks if has_price_in_range(d, 80, float('inf'))]
+
+    # 排序
+    if sort_by == 'rating':
+        drinks = sorted(drinks, key=lambda x: x.tea_shop.rating, reverse=True)
+    elif sort_by == 'price_asc':
+        drinks = sorted(drinks, key=lambda x: get_min_price(x))
+    elif sort_by == 'price_desc':
+        drinks = sorted(drinks, key=lambda x: get_max_price(x), reverse=True)
 
     context = {
-        'drinks': drinks,
-        'total_count': drinks.count(),
+        'drinks': drinks[:50],  # 限制顯示數量
+        'total_count': len(drinks),
+        'rating_filter': rating_filter,
+        'milk_filter': milk_filter,
+        'price_filter': price_filter,
+        'tea_filter': tea_filter,
+        'topping_filter': topping_filter,
+        'sort_by': sort_by,
     }
 
     return render(request, 'polls/recommended_drinks.html', context)
@@ -90,6 +142,8 @@ def nearby_shops(request):
     user_lat = request.GET.get('lat', '')
     user_lng = request.GET.get('lng', '')
     distance_filter = request.GET.get('distance', '')
+    open_now = request.GET.get('open_now', '')  # Toggle
+    sort_by = request.GET.get('sort', 'distance')
 
     tea_shops = TeaShop.objects.all()
 
@@ -109,16 +163,25 @@ def nearby_shops(request):
                 shop.distance = distance
                 shops_with_distance.append(shop)
 
-            # 距離篩選
+            # 距離篩選（支援 0.5, 1, 3）
             if distance_filter:
                 try:
                     max_distance = float(distance_filter)
-                    shops_with_distance = [s for s in shops_with_distance if s.distance <= max_distance]
+                    shops_with_distance = [s for s in shops_with_distance
+                                          if s.distance <= max_distance]
                 except ValueError:
                     pass
 
-            # 按距離排序
-            tea_shops = sorted(shops_with_distance, key=lambda x: x.distance)
+            # 營業中篩選
+            if open_now == 'true':
+                shops_with_distance = [s for s in shops_with_distance
+                                      if s.is_open_now() == True]
+
+            # 排序
+            if sort_by == 'rating':
+                tea_shops = sorted(shops_with_distance, key=lambda x: x.rating, reverse=True)
+            else:  # distance
+                tea_shops = sorted(shops_with_distance, key=lambda x: x.distance)
 
         except (ValueError, TypeError):
             tea_shops = list(tea_shops.order_by('-rating'))
@@ -132,6 +195,8 @@ def nearby_shops(request):
         'user_lat': user_lat,
         'user_lng': user_lng,
         'distance_filter': distance_filter,
+        'open_now': open_now,
+        'sort_by': sort_by,
     }
 
     return render(request, 'polls/nearby_shops.html', context)
@@ -145,27 +210,43 @@ def shop_detail(request, shop_id):
 
     # 取得篩選參數
     milk_filter = request.GET.get('milk_type', '')
+    price_filter = request.GET.get('price', '')
+    tea_filter = request.GET.get('tea_type', '')
+    topping_filter = request.GET.get('topping', '')
     sort_by = request.GET.get('sort', 'name')
 
     # 取得該店家的所有飲料
     drinks = Drink.objects.filter(tea_shop=shop)
 
-    # 奶類篩選
-    if milk_filter:
+    # 奶類篩選（只保留 fresh_milk 和 creamer）
+    if milk_filter in ['fresh_milk', 'creamer']:
         drinks = drinks.filter(milk_type=milk_filter)
 
-    # 轉換為列表以便排序
+    # 茶類篩選
+    if tea_filter:
+        drinks = drinks.filter(tea_type=tea_filter)
+
+    # 配料篩選
+    if topping_filter:
+        drinks = drinks.filter(topping=topping_filter)
+
+    # 轉換為列表以便價格篩選和排序
     drinks = list(drinks)
 
-    # 排序
+    # 價格篩選
+    if price_filter == 'under_50':
+        drinks = [d for d in drinks if has_price_in_range(d, 0, 50)]
+    elif price_filter == '50_80':
+        drinks = [d for d in drinks if has_price_in_range(d, 50, 80)]
+    elif price_filter == 'over_80':
+        drinks = [d for d in drinks if has_price_in_range(d, 80, float('inf'))]
+
+    # 排序（移除 name）
     if sort_by == 'price_asc':
-        # 按最低價格排序（升冪）
         drinks = sorted(drinks, key=lambda x: get_min_price(x))
     elif sort_by == 'price_desc':
-        # 按最高價格排序（降冪）
         drinks = sorted(drinks, key=lambda x: get_max_price(x), reverse=True)
-    elif sort_by == 'name':
-        # 按名稱排序
+    else:
         drinks = sorted(drinks, key=lambda x: x.name)
 
     context = {
@@ -173,6 +254,9 @@ def shop_detail(request, shop_id):
         'drinks': drinks,
         'total_drinks': len(drinks),
         'milk_filter': milk_filter,
+        'price_filter': price_filter,
+        'tea_filter': tea_filter,
+        'topping_filter': topping_filter,
         'sort_by': sort_by,
     }
 
@@ -201,6 +285,19 @@ def get_max_price(drink):
     if drink.has_large and drink.price_large:
         prices.append(float(drink.price_large))
     return max(prices) if prices else 0
+
+
+def has_price_in_range(drink, min_price, max_price):
+    """檢查飲料是否有任何杯型的價格在指定範圍內"""
+    prices = []
+    if drink.has_small and drink.price_small:
+        prices.append(float(drink.price_small))
+    if drink.has_medium and drink.price_medium:
+        prices.append(float(drink.price_medium))
+    if drink.has_large and drink.price_large:
+        prices.append(float(drink.price_large))
+
+    return any(min_price <= p < max_price for p in prices)
 
 
 def calculate_distance(lat1, lon1, lat2, lon2):

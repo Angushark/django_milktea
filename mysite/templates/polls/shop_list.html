@@ -13,7 +13,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
             color: white;
             padding: 20px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -53,7 +53,7 @@
         .search-btn {
             border-radius: 25px;
             padding: 10px 25px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
             border: none;
             color: white;
             font-weight: bold;
@@ -74,14 +74,14 @@
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #74b9ff;
             color: white;
-            border-color: #667eea;
+            border-color: #74b9ff;
         }
 
         .shop-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
@@ -169,6 +169,32 @@
             border-radius: 12px;
             font-size: 0.9rem;
         }
+
+        .shop-image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #f0f0f0;
+        }
+
+        .shop-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .shop-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+            color: #adb5bd;
+            font-size: 3rem;
+        }
     </style>
 </head>
 <body>
@@ -204,10 +230,21 @@
         <div class="filter-section">
             <div class="d-flex flex-wrap align-items-center">
                 <span class="mr-3"><strong>篩選：</strong></span>
-                <a href="?open_now=true&rating={{ rating_filter }}&sort={{ sort_by }}&search={{ search_query }}"
-                   class="btn btn-outline-success filter-btn {% if open_now %}active{% endif %}">
-                    <i class="fas fa-clock"></i> 營業中
-                </a>
+
+                <!-- 營業中 Toggle -->
+                {% if open_now == 'true' %}
+                    <a href="?rating={{ rating_filter }}&sort={{ sort_by }}&search={{ search_query }}"
+                       class="btn btn-outline-success filter-btn active">
+                        <i class="fas fa-clock"></i> 營業中
+                    </a>
+                {% else %}
+                    <a href="?open_now=true&rating={{ rating_filter }}&sort={{ sort_by }}&search={{ search_query }}"
+                       class="btn btn-outline-success filter-btn">
+                        <i class="fas fa-clock"></i> 營業中
+                    </a>
+                {% endif %}
+
+                <!-- 評價篩選（新增 3.5）-->
                 <a href="?rating=4.5&open_now={{ open_now }}&sort={{ sort_by }}&search={{ search_query }}"
                    class="btn btn-outline-primary filter-btn {% if rating_filter == '4.5' %}active{% endif %}">
                     <i class="fas fa-star"></i> 4.5星以上
@@ -216,12 +253,15 @@
                    class="btn btn-outline-primary filter-btn {% if rating_filter == '4.0' %}active{% endif %}">
                     <i class="fas fa-star"></i> 4.0星以上
                 </a>
-                <a href="?open_now=&rating=&sort={{ sort_by }}&search={{ search_query }}"
-                   class="btn btn-outline-secondary filter-btn {% if not rating_filter and not open_now %}active{% endif %}">
-                    全部
+                <a href="?rating=3.5&open_now={{ open_now }}&sort={{ sort_by }}&search={{ search_query }}"
+                   class="btn btn-outline-primary filter-btn {% if rating_filter == '3.5' %}active{% endif %}">
+                    <i class="fas fa-star"></i> 3.5星以上
                 </a>
+                <!-- 移除"全部"按鈕 -->
 
                 <span class="mx-3">|</span>
+
+                <!-- 排序（移除"店名"）-->
                 <span class="mr-3"><strong>排序：</strong></span>
                 <a href="?rating={{ rating_filter }}&open_now={{ open_now }}&sort=rating_desc&search={{ search_query }}"
                    class="btn btn-outline-info filter-btn {% if sort_by == 'rating_desc' or sort_by == '-rating' %}active{% endif %}">
@@ -230,10 +270,6 @@
                 <a href="?rating={{ rating_filter }}&open_now={{ open_now }}&sort=rating_asc&search={{ search_query }}"
                    class="btn btn-outline-info filter-btn {% if sort_by == 'rating_asc' %}active{% endif %}">
                     評分 <i class="fas fa-arrow-up"></i>
-                </a>
-                <a href="?rating={{ rating_filter }}&open_now={{ open_now }}&sort=name&search={{ search_query }}"
-                   class="btn btn-outline-info filter-btn {% if sort_by == 'name' %}active{% endif %}">
-                    店名
                 </a>
             </div>
         </div>
@@ -253,6 +289,19 @@
             {% endif %}
 
             <a href="{% url 'shop_detail' shop.id %}" class="shop-card-link">
+                <!-- 照片區域 -->
+                {% load static %}
+                <div class="shop-image-container mb-3">
+                    <img src="{% static 'shop_images/' %}{{ shop.place_id }}.jpg"
+                         alt="{{ shop.name }}"
+                         class="shop-image"
+                         onerror="this.onerror=null; this.src='{% static 'shop_images/' %}{{ shop.place_id }}.png'; if(this.src.endsWith('.png') && this.complete && this.naturalHeight === 0) { this.style.display='none'; this.nextElementSibling.style.display='flex'; }">
+                    <div class="shop-image-placeholder" style="display: none;">
+                        <i class="fas fa-store"></i>
+                    </div>
+                </div>
+
+                <!-- 簡化的店家資訊 -->
                 <div class="d-flex justify-content-between align-items-start mb-2" style="padding-right: 50px;">
                     <div class="shop-name">{{ shop.name }}</div>
                     {% if shop.is_open_now == True %}
@@ -264,20 +313,6 @@
 
                 <div class="shop-rating mb-2">
                     <i class="fas fa-star"></i> {{ shop.rating }}
-                </div>
-
-                <div class="text-muted mb-2">
-                    <i class="fas fa-map-marker-alt"></i> {{ shop.address }}
-                </div>
-
-                {% if shop.phone %}
-                <div class="text-muted mb-2">
-                    <i class="fas fa-phone"></i> {{ shop.phone }}
-                </div>
-                {% endif %}
-
-                <div class="text-muted" style="font-size: 0.9rem;">
-                    <i class="fas fa-clock"></i> {{ shop.opening_hours|truncatewords:10 }}
                 </div>
             </a>
         </div>

@@ -78,10 +78,8 @@ def recommended_drinks(request):
     topping_filter = request.GET.get('topping', '')
     sort_by = request.GET.get('sort', 'rating_desc')  # 預設評價由高到低
 
-    # 基本查詢：評分 >= 4.0 的店家飲料
-    drinks = Drink.objects.filter(
-        tea_shop__rating__gte=4.0
-    ).select_related('tea_shop')
+    # 基本查詢：建立基礎查詢集
+    drinks = Drink.objects.select_related('tea_shop')
 
     # 評價篩選（店家評分）
     if rating_filter:
@@ -90,6 +88,9 @@ def recommended_drinks(request):
             drinks = drinks.filter(tea_shop__rating__gte=min_rating)
         except ValueError:
             pass
+    else:
+        # 無篩選時的預設行為：顯示 4.0 星以上
+        drinks = drinks.filter(tea_shop__rating__gte=4.0)
 
     # 奶類篩選
     if milk_filter:

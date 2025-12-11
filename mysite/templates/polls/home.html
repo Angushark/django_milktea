@@ -23,6 +23,8 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            position: relative;
+            z-index: 10;
         }
 
         /* 頂部導航 */
@@ -57,6 +59,211 @@
         .favorite-link i {
             margin-right: 8px;
             color: #e74c3c;
+        }
+
+        /* 註冊按鈕特殊樣式 */
+        .favorite-link.register-btn {
+            background: white;
+            color: #6B4423;
+            border: 2px solid #D4A574;
+        }
+
+        .favorite-link.register-btn:hover {
+            background: #D4A574;
+            color: white;
+            border-color: #D4A574;
+        }
+
+        .favorite-link.register-btn i {
+            color: #D4A574;
+        }
+
+        .favorite-link.register-btn:hover i {
+            color: white;
+        }
+
+        /* 波浪動畫背景容器 */
+        .waves-container {
+            position: fixed;
+            top: 30%;
+            left: 0;
+            width: 100%;
+            bottom: 0;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .waves {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20vh;
+            margin-bottom: -7px;
+            min-height: 100px;
+            max-height: 200px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* 波浪動畫 */
+        .parallax > use {
+            animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
+        }
+
+        .parallax > use:nth-child(1) {
+            animation-delay: -2s;
+            animation-duration: 7s;
+        }
+
+        .parallax > use:nth-child(2) {
+            animation-delay: -3s;
+            animation-duration: 10s;
+        }
+
+        .parallax > use:nth-child(3) {
+            animation-delay: -4s;
+            animation-duration: 13s;
+        }
+
+        .parallax > use:nth-child(4) {
+            animation-delay: -5s;
+            animation-duration: 20s;
+        }
+
+        @keyframes move-forever {
+            0% {
+                transform: translate3d(-90px, 0, 0);
+            }
+            100% {
+                transform: translate3d(85px, 0, 0);
+            }
+        }
+
+        /* 珍珠層 - 在波浪下方 */
+        .pearls-layer {
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* 珍珠元素 */
+        .pearl {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #3E2723;
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.3), 2px 2px 5px rgba(0,0,0,0.2);
+            animation: float-with-wave 5s ease-in-out infinite;
+        }
+
+        .pearl:nth-child(1) {
+            left: 15%;
+            bottom: 10%;
+            animation-duration: 5s;
+            animation-delay: 0s;
+        }
+
+        .pearl:nth-child(2) {
+            left: 35%;
+            bottom: 10%;
+            width: 30px;
+            height: 30px;
+            animation-duration: 6s;
+            animation-delay: -1s;
+        }
+
+        .pearl:nth-child(3) {
+            left: 55%;
+            bottom: 5%;
+            width: 22px;
+            height: 22px;
+            animation-duration: 5.5s;
+            animation-delay: -2s;
+        }
+
+        .pearl:nth-child(4) {
+            left: 70%;
+            bottom: 15%;
+            width: 28px;
+            height: 28px;
+            animation-duration: 6.5s;
+            animation-delay: -3s;
+        }
+
+        .pearl:nth-child(5) {
+            left: 85%;
+            bottom: 8%;
+            animation-duration: 5.2s;
+            animation-delay: -1.5s;
+        }
+
+        @keyframes float-with-wave {
+            0%, 100% {
+                transform: translateY(0px) translateX(0px);
+            }
+            25% {
+                transform: translateY(-10px) translateX(5px);
+            }
+            50% {
+                transform: translateY(0px) translateX(0px);
+            }
+            75% {
+                transform: translateY(10px) translateX(-5px);
+            }
+        }
+
+        /* 吸管元素 */
+        .straw {
+            position: absolute;
+            right: 10%;
+            bottom: 8%;
+            width: 10px;
+            height: 180px;
+            z-index: 1.5;
+            transform-origin: bottom center;
+            animation: sway-straw 4s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .straw-body {
+            width: 100%;
+            height: 140px;
+            background: repeating-linear-gradient(
+                0deg,
+                #FF6B6B 0px,
+                #FF6B6B 15px,
+                #FFFFFF 15px,
+                #FFFFFF 30px
+            );
+            border-radius: 5px;
+        }
+
+        .straw-bend {
+            width: 12px;
+            height: 50px;
+            background: repeating-linear-gradient(
+                45deg,
+                #FF6B6B 0px,
+                #FF6B6B 10px,
+                #FFFFFF 10px,
+                #FFFFFF 20px
+            );
+            border-radius: 6px;
+            position: absolute;
+            top: -33px;
+            left: -11px;
+            transform: rotate(-30deg);
+        }
+
+        @keyframes sway-straw {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
         }
 
         /* 主要內容區 */
@@ -213,9 +420,78 @@
                 padding: 16px 24px;
             }
         }
+
+        /* 波浪動畫響應式 */
+        @media (max-width: 768px) {
+            .waves-container {
+                top: 40%;
+            }
+            .waves {
+                height: 15vh;
+                min-height: 60px;
+            }
+            .pearls-layer,
+            .straw {
+                display: none;  /* 平板版隱藏珍珠和吸管 */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .waves-container {
+                top: 50%;
+            }
+            .waves {
+                height: 12vh;
+                min-height: 50px;
+            }
+            .main-content {
+                padding: 40px 30px;
+            }
+        }
+
+        /* 減少動畫偏好設定 */
+        @media (prefers-reduced-motion: reduce) {
+            .parallax > use,
+            .pearl,
+            .straw {
+                animation: none;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- 波浪動畫背景層 -->
+    <div class="waves-container">
+        <!-- 珍珠層（z-index: 1，在波浪下方） -->
+        <div class="pearls-layer">
+            <div class="pearl"></div>
+            <div class="pearl"></div>
+            <div class="pearl"></div>
+            <div class="pearl"></div>
+            <div class="pearl"></div>
+        </div>
+
+        <!-- 波浪 SVG（z-index: 2，在珍珠上方） -->
+        <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+             viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+            <defs>
+                <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+            </defs>
+            <g class="parallax">
+                <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(212, 165, 116, 0.3)" />
+                <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(212, 165, 116, 0.4)" />
+                <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(212, 165, 116, 0.5)" />
+                <use xlink:href="#gentle-wave" x="48" y="7" fill="rgba(212, 165, 116, 0.6)" />
+            </g>
+        </svg>
+
+        <!-- 吸管（z-index: 3） -->
+        <div class="straw">
+            <div class="straw-bend"></div>
+            <div class="straw-body"></div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- 頂部導航 - 個人收藏 -->
         <div class="top-nav">
@@ -234,7 +510,7 @@
                         <i class="fas fa-sign-in-alt"></i>
                         登入
                     </a>
-                    <a href="{% url 'register' %}" class="favorite-link" style="background: #74b9ff; color: white; border-color: #74b9ff;">
+                    <a href="{% url 'register' %}" class="favorite-link register-btn">
                         <i class="fas fa-user-plus"></i>
                         註冊
                     </a>

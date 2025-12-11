@@ -165,13 +165,22 @@ def nearby_shops(request):
                 shop.distance = distance
                 shops_with_distance.append(shop)
 
-            # 距離篩選（支援 0.5, 1, 3）
+            # 顯示距離統計
+            if shops_with_distance:
+                distances = [s.distance for s in shops_with_distance]
+                print(f"距離範圍: 最近 {min(distances):.2f}km, 最遠 {max(distances):.2f}km")
+
+            # 距離篩選（支援 0.5, 1, 3, 5, 8）
             if distance_filter:
                 try:
                     max_distance = float(distance_filter)
+                    before_count = len(shops_with_distance)
                     shops_with_distance = [s for s in shops_with_distance
                                           if s.distance <= max_distance]
+                    after_count = len(shops_with_distance)
+                    print(f"距離篩選: {max_distance}km, 篩選前: {before_count}家, 篩選後: {after_count}家")
                 except ValueError:
+                    print(f"距離篩選值無效: {distance_filter}")
                     pass
 
             # 營業中篩選

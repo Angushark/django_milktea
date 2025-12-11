@@ -374,7 +374,7 @@
             <!-- Row 6: 排序 (Toggle Icons) -->
             <div class="filter-row">
                 <span class="filter-label">排序：</span>
-                <button class="btn filter-btn sort-toggle {% if sort_by == 'rating_desc' or sort_by == 'rating_asc' or sort_by == 'rating' or not sort_by %}active{% endif %}"
+                <button class="btn filter-btn sort-toggle {% if not sort_by or sort_by == 'rating_desc' or sort_by == 'rating_asc' or sort_by == 'rating' %}active{% endif %}"
                         onclick="toggleSort('rating')">
                     <span>評價</span>
                     {% if sort_by == 'rating_asc' %}

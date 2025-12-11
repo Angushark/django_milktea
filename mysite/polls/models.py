@@ -105,6 +105,12 @@ class Drink(models.Model):
         ('oolong_tea', '烏龍茶'),
         ('blue_tea', '青茶'),
         ('matcha', '抹茶'),
+        ('tieguanyin', '鐵觀音'),
+        ('barley_tea', '麥茶'),
+        ('season', '四季春'),
+        ('jasmine', '茉莉花茶'),
+        ('pu_erh', '普洱茶'),
+        ('other', '其他')
     ]
 
     tea_shop = models.ForeignKey(TeaShop, on_delete=models.CASCADE, related_name='drinks', verbose_name='所屬店家')

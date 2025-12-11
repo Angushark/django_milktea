@@ -339,7 +339,7 @@
             <!-- Row 1: 距離 (Slider) -->
             <div class="filter-row">
                 <span class="filter-label">距離篩選：</span>
-                <button class="btn filter-btn slider-trigger" data-toggle="modal" data-target="#distanceModal">
+                <button class="btn filter-btn slider-trigger {% if distance_filter %}active{% endif %}" data-toggle="modal" data-target="#distanceModal">
                     <span class="current-value">
                         {% if distance_filter == '0.5' %}500公尺內
                         {% elif distance_filter == '1' %}1公里內
@@ -364,23 +364,15 @@
             <!-- Row 3: 排序 (Two Toggle Buttons) -->
             <div class="filter-row">
                 <span class="filter-label">排序：</span>
-                <button class="btn filter-btn sort-toggle {% if sort_by == 'distance_asc' or sort_by == 'distance' or not sort_by %}active{% endif %}"
+                <button class="btn filter-btn sort-toggle {% if not sort_by or sort_by == 'distance_asc' or sort_by == 'distance_desc' or sort_by == 'distance' %}active{% endif %}"
                         onclick="toggleSortNearby('distance')">
                     <span>距離</span>
-                    {% if sort_by == 'distance_desc' %}
-                        <i class="fas fa-sort-amount-down ml-2"></i>
-                    {% else %}
-                        <i class="fas fa-sort-amount-up ml-2"></i>
-                    {% endif %}
+                    <i class="fas fa-sort-amount-down ml-2"></i>
                 </button>
                 <button class="btn filter-btn sort-toggle {% if sort_by == 'rating_desc' or sort_by == 'rating_asc' or sort_by == 'rating' %}active{% endif %}"
                         onclick="toggleSortNearby('rating')">
                     <span>評價</span>
-                    {% if sort_by == 'rating_asc' %}
-                        <i class="fas fa-sort-amount-up ml-2"></i>
-                    {% else %}
-                        <i class="fas fa-sort-amount-down ml-2"></i>
-                    {% endif %}
+                    <i class="fas fa-sort-amount-down ml-2"></i>
                 </button>
             </div>
         </div>
@@ -544,25 +536,29 @@
             { value: 8, label: '8公里' }
         ];
 
-        // Update display when distance slider moves
-        document.getElementById('distanceSlider').addEventListener('input', function() {
-            const index = this.value;
-            document.getElementById('distanceValue').textContent = distanceValues[index].label;
-        });
-
         // Apply distance filter
         function applyDistance() {
             const index = document.getElementById('distanceSlider').value;
             const distance = distanceValues[index].value;
             const url = new URL(window.location);
+
+            // 設置距離參數（URL會自動保留所有現有參數）
             url.searchParams.set('distance', distance);
+
+            console.log('Applying distance filter:', distance, 'km');
+            console.log('Full URL:', url.toString());
+            $('#distanceModal').modal('hide');
             window.location.href = url.toString();
         }
 
         // Clear distance filter
         function clearDistance() {
             const url = new URL(window.location);
+
+            // 刪除距離參數（URL會自動保留其他參數）
             url.searchParams.delete('distance');
+
+            $('#distanceModal').modal('hide');
             window.location.href = url.toString();
         }
 
@@ -636,17 +632,45 @@
             });
         }
 
-        // 頁面載入時檢查已收藏的項目
+        // 頁面載入時檢查已收藏的項目和初始化slider
         $(document).ready(function() {
-            // Initialize distance slider value
-            const currentDistance = '{{ distance_filter }}';
-            if (currentDistance) {
-                const distance = parseFloat(currentDistance);
-                const index = distanceValues.findIndex(d => d.value === distance);
-                if (index >= 0) {
-                    document.getElementById('distanceSlider').value = index;
+            // Initialize distance slider event listener
+            const distanceSlider = document.getElementById('distanceSlider');
+            if (distanceSlider) {
+                distanceSlider.addEventListener('input', function() {
+                    const index = this.value;
                     document.getElementById('distanceValue').textContent = distanceValues[index].label;
+                });
+
+                // Initialize distance slider value
+                const currentDistance = '{{ distance_filter }}';
+                if (currentDistance) {
+                    const distance = parseFloat(currentDistance);
+                    const index = distanceValues.findIndex(d => d.value === distance);
+                    if (index >= 0) {
+                        distanceSlider.value = index;
+                        document.getElementById('distanceValue').textContent = distanceValues[index].label;
+                    }
                 }
+            }
+
+            // 頁面載入時更新排序圖標
+            const currentSort = '{{ sort_by }}';
+
+            // 更新距離排序圖標
+            const distanceSortBtn = $('.sort-toggle').eq(0).find('i');
+            if (currentSort === 'distance_desc') {
+                distanceSortBtn.removeClass('fa-sort-amount-up').addClass('fa-sort-amount-down');
+            } else if (currentSort === 'distance_asc' || !currentSort || currentSort === 'distance') {
+                distanceSortBtn.removeClass('fa-sort-amount-down').addClass('fa-sort-amount-up');
+            }
+
+            // 更新評價排序圖標
+            const ratingSortBtn = $('.sort-toggle').eq(1).find('i');
+            if (currentSort === 'rating_asc') {
+                ratingSortBtn.removeClass('fa-sort-amount-down').addClass('fa-sort-amount-up');
+            } else if (currentSort === 'rating_desc' || currentSort === 'rating') {
+                ratingSortBtn.removeClass('fa-sort-amount-up').addClass('fa-sort-amount-down');
             }
 
             {% if user.is_authenticated %}

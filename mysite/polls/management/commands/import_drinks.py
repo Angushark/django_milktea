@@ -87,10 +87,8 @@ class Command(BaseCommand):
 
         if stats['shop_not_found']:
             self.stdout.write(self.style.WARNING(f'  店家不存在: {len(stats["shop_not_found"])} 筆'))
-            for detail in stats['shop_not_found'][:5]:  # 只顯示前 5 筆
+            for detail in stats['shop_not_found']:  # 顯示全部
                 self.stdout.write(f'    - {detail}')
-            if len(stats['shop_not_found']) > 5:
-                self.stdout.write(f'    ... 還有 {len(stats["shop_not_found"]) - 5} 筆')
 
         if stats['errors']:
             self.stdout.write(self.style.ERROR(f'  錯誤: {len(stats["errors"])} 筆'))

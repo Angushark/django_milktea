@@ -8,12 +8,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
-            background: #f5f7fa;
+            background: linear-gradient(to bottom, #FFF8F0 0%, #F5E6D3 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
         }
 
         .header {
-            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            background: linear-gradient(135deg, #D4A574 0%, #A67C52 100%);
             color: white;
             padding: 20px 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -43,7 +44,7 @@
         .shop-name {
             font-size: 2rem;
             font-weight: bold;
-            color: #333;
+            color: #6B4423;
             margin-bottom: 15px;
         }
 
@@ -78,7 +79,7 @@
 
         .info-item i {
             width: 25px;
-            color: #667eea;
+            color: #D4A574;
         }
 
         .filter-section {
@@ -93,20 +94,23 @@
             margin: 5px;
             border-radius: 20px;
             padding: 8px 20px;
+            border: 2px solid #D4A574 !important;
+            background: white;
+            color: #6B4423;
         }
 
         .filter-btn.active {
-            background: #74b9ff;
+            background: #D4A574;
             color: white;
-            border-color: #74b9ff;
+            border-color: #D4A574 !important;
         }
 
         .drinks-section-title {
             font-size: 1.5rem;
             font-weight: bold;
             margin-bottom: 20px;
-            color: #333;
-            border-left: 4px solid #667eea;
+            color: #6B4423;
+            border-left: 4px solid #D4A574;
             padding-left: 15px;
         }
 
@@ -164,12 +168,12 @@
         .drink-name {
             font-size: 1.3rem;
             font-weight: bold;
-            color: #333;
+            color: #6B4423;
             margin-bottom: 10px;
         }
 
         .drink-price {
-            color: #667eea;
+            color: #A67C52;
             font-weight: bold;
             font-size: 1.2rem;
         }
@@ -189,11 +193,24 @@
         .size-badge {
             display: inline-block;
             padding: 3px 10px;
-            background: #e3f2fd;
+            background: #FFF8F0;
+            border: 1px solid #D4A574;
             border-radius: 10px;
             margin-right: 8px;
             margin-bottom: 5px;
             font-size: 0.85rem;
+            color: #6B4423;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #D4A574 0%, #A67C52 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #C89968 0%, #9A7048 100%);
+            color: white;
         }
     </style>
 </head>

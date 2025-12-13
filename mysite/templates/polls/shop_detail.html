@@ -212,15 +212,86 @@
             background: linear-gradient(135deg, #C89968 0%, #9A7048 100%);
             color: white;
         }
+
+        /* Milk type color scheme */
+        .badge-milk-creamer { background-color: #90EE90; color: white; }       /* Light Green */
+        .badge-milk-fresh_milk { background-color: #007bff; color: white; }    /* Blue */
+
+        /* Tea type color scheme */
+        .badge-tea-black_tea { background-color: #dc3545; color: white; }      /* Red */
+        .badge-tea-green_tea { background-color: #28a745; color: white; }      /* Deep Green */
+        .badge-tea-oolong_tea { background-color: #8B4513; color: white; }     /* Brown */
+        .badge-tea-blue_tea { background-color: #4169E1; color: white; }       /* Royal Blue */
+        .badge-tea-matcha { background-color: #006400; color: white; }         /* Dark Green */
+        .badge-tea-tieguanyin { background-color: rgb(71,56,34); color: white; }
+        .badge-tea-barley_tea { background-color: #BE9664; color: white; }     /* Gold */
+        .badge-tea-season { background-color: #FFFFE0; color: #333; }          /* Light Yellow */
+        .badge-tea-jasmine { background-color: #E6E6FA; color: #333; }         /* Light Purple */
+        .badge-tea-pu_erh { background-color: rgb(33,90,108); color: white; }
+        .badge-tea-other { background-color: #6c757d; color: white; }          /* Gray */
+
+        /* Vertical Filter Layout */
+        .filter-row {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .filter-row:last-child {
+            border-bottom: none;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            min-width: 100px;
+            color: #495057;
+            font-size: 0.95rem;
+        }
+
+        .filter-buttons-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-buttons-group .filter-btn {
+            margin: 0;
+            font-size: 0.9rem;
+            padding: 6px 16px;
+        }
+
+        .sort-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .filter-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .filter-label {
+                min-width: auto;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="container">
             <div class="d-flex justify-content-between align-items-center">
+                {% if request.GET.next %}
+                <a href="{{ request.GET.next }}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> 返回上一頁
+                </a>
+                {% else %}
                 <a href="{% url 'shop_list' %}" class="back-btn">
                     <i class="fas fa-arrow-left"></i> 返回店家列表
                 </a>
+                {% endif %}
                 <h1><i class="fas fa-store"></i> 店家詳細資訊</h1>
                 <div></div>
             </div>
@@ -276,85 +347,94 @@
 
         <!-- 飲料篩選區 -->
         <div class="filter-section">
-            <!-- 第一行：奶類、價格 -->
-            <div class="d-flex flex-wrap align-items-center">
-                <span class="mr-3"><strong>奶類：</strong></span>
-                <a href="?{% if milk_filter != 'fresh_milk' %}milk_type=fresh_milk&{% endif %}price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-success filter-btn {% if milk_filter == 'fresh_milk' %}active{% endif %}">
-                    <i class="fas fa-glass-whiskey"></i> 鮮奶
-                </a>
-                <a href="?{% if milk_filter != 'creamer' %}milk_type=creamer&{% endif %}price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-warning filter-btn {% if milk_filter == 'creamer' %}active{% endif %}">
-                    <i class="fas fa-coffee"></i> 奶精
-                </a>
-
-                <span class="mx-3">|</span>
-
-                <!-- 價格篩選 -->
-                <span class="mr-3"><strong>價格：</strong></span>
-                <a href="?milk_type={{ milk_filter }}&{% if price_filter != 'under_50' %}price=under_50&{% endif %}tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-info filter-btn {% if price_filter == 'under_50' %}active{% endif %}">
-                    &lt;50
-                </a>
-                <a href="?milk_type={{ milk_filter }}&{% if price_filter != '50_80' %}price=50_80&{% endif %}tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-info filter-btn {% if price_filter == '50_80' %}active{% endif %}">
-                    50-80
-                </a>
-                <a href="?milk_type={{ milk_filter }}&{% if price_filter != 'over_80' %}price=over_80&{% endif %}tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-info filter-btn {% if price_filter == 'over_80' %}active{% endif %}">
-                    ≥80
-                </a>
-
-                <span class="mx-3">|</span>
-
-                <!-- 茶類篩選 -->
-                <span class="mr-3"><strong>茶類：</strong></span>
-                <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&{% if tea_filter != 'black_tea' %}tea_type=black_tea&{% endif %}topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-danger filter-btn {% if tea_filter == 'black_tea' %}active{% endif %}">
-                    紅茶
-                </a>
-                <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&{% if tea_filter != 'green_tea' %}tea_type=green_tea&{% endif %}topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-success filter-btn {% if tea_filter == 'green_tea' %}active{% endif %}">
-                    綠茶
-                </a>
-                <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&{% if tea_filter != 'oolong_tea' %}tea_type=oolong_tea&{% endif %}topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-warning filter-btn {% if tea_filter == 'oolong_tea' %}active{% endif %}">
-                    烏龍茶
-                </a>
-                <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&{% if tea_filter != 'blue_tea' %}tea_type=blue_tea&{% endif %}topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-primary filter-btn {% if tea_filter == 'blue_tea' %}active{% endif %}">
-                    青茶
-                </a>
-                <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&{% if tea_filter != 'matcha' %}tea_type=matcha&{% endif %}topping={{ topping_filter }}&sort={{ sort_by }}"
-                   class="btn btn-outline-info filter-btn {% if tea_filter == 'matcha' %}active{% endif %}">
-                    抹茶
-                </a>
-
-                <span class="mx-3">|</span>
-
-                <!-- 配料篩選 -->
-                <span class="mr-3"><strong>配料：</strong></span>
-                <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&{% if topping_filter != 'yes' %}topping=yes&{% endif %}sort={{ sort_by }}"
-                   class="btn btn-outline-secondary filter-btn {% if topping_filter == 'yes' %}active{% endif %}">
-                    有
-                </a>
-                <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&{% if topping_filter != 'no' %}topping=no&{% endif %}sort={{ sort_by }}"
-                   class="btn btn-outline-secondary filter-btn {% if topping_filter == 'no' %}active{% endif %}">
-                    無
-                </a>
+            <!-- Row 1: 奶類 -->
+            <div class="filter-row">
+                <span class="filter-label">奶類：</span>
+                <div class="filter-buttons-group">
+                    <a href="?{% if milk_filter != 'fresh_milk' %}milk_type=fresh_milk{% endif %}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if milk_filter == 'fresh_milk' %}active{% endif %}">
+                        鮮奶
+                    </a>
+                    <a href="?{% if milk_filter != 'creamer' %}milk_type=creamer{% endif %}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if milk_filter == 'creamer' %}active{% endif %}">
+                        奶精
+                    </a>
+                </div>
             </div>
 
-            <!-- 第二行：排序 -->
-            <div class="d-flex flex-wrap align-items-center mt-3">
-                <span class="mr-3"><strong>排序：</strong></span>
-                <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort=price_asc"
-                   class="btn btn-outline-primary filter-btn {% if sort_by == 'price_asc' %}active{% endif %}">
-                    價格 <i class="fas fa-arrow-up"></i>
-                </a>
-                <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort=price_desc"
-                   class="btn btn-outline-primary filter-btn {% if sort_by == 'price_desc' %}active{% endif %}">
-                    價格 <i class="fas fa-arrow-down"></i>
-                </a>
+            <!-- Row 2: 價格 -->
+            <div class="filter-row">
+                <span class="filter-label">價格：</span>
+                <div class="filter-buttons-group">
+                    <a href="?milk_type={{ milk_filter }}{% if price_filter != 'under_50' %}&price=under_50{% endif %}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if price_filter == 'under_50' %}active{% endif %}">
+                        &lt;50
+                    </a>
+                    <a href="?milk_type={{ milk_filter }}{% if price_filter != '50_80' %}&price=50_80{% endif %}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if price_filter == '50_80' %}active{% endif %}">
+                        50-80
+                    </a>
+                    <a href="?milk_type={{ milk_filter }}{% if price_filter != 'over_80' %}&price=over_80{% endif %}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if price_filter == 'over_80' %}active{% endif %}">
+                        ≥80
+                    </a>
+                </div>
+            </div>
+
+            <!-- Row 3: 茶類 -->
+            <div class="filter-row">
+                <span class="filter-label">茶類：</span>
+                <div class="filter-buttons-group">
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'black_tea' %}&tea_type=black_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'black_tea' %}active{% endif %}">紅茶</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'green_tea' %}&tea_type=green_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'green_tea' %}active{% endif %}">綠茶</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'oolong_tea' %}&tea_type=oolong_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'oolong_tea' %}active{% endif %}">烏龍茶</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'blue_tea' %}&tea_type=blue_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'blue_tea' %}active{% endif %}">青茶</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'matcha' %}&tea_type=matcha{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'matcha' %}active{% endif %}">抹茶</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'tieguanyin' %}&tea_type=tieguanyin{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'tieguanyin' %}active{% endif %}">鐵觀音</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'barley_tea' %}&tea_type=barley_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'barley_tea' %}active{% endif %}">麥茶</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'season' %}&tea_type=season{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'season' %}active{% endif %}">四季春</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'jasmine' %}&tea_type=jasmine{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'jasmine' %}active{% endif %}">茉莉花茶</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'pu_erh' %}&tea_type=pu_erh{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'pu_erh' %}active{% endif %}">普洱茶</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'other' %}&tea_type=other{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if tea_filter == 'other' %}active{% endif %}">其他</a>
+                </div>
+            </div>
+
+            <!-- Row 4: 配料 -->
+            <div class="filter-row">
+                <span class="filter-label">配料：</span>
+                <div class="filter-buttons-group">
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}{% if topping_filter != 'yes' %}&topping=yes{% endif %}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if topping_filter == 'yes' %}active{% endif %}">有</a>
+                    <a href="?milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}{% if topping_filter != 'no' %}&topping=no{% endif %}&sort={{ sort_by }}"
+                       class="btn filter-btn {% if topping_filter == 'no' %}active{% endif %}">無</a>
+                </div>
+            </div>
+
+            <!-- Row 5: 排序 -->
+            <div class="filter-row">
+                <span class="filter-label">排序：</span>
+                <button class="btn filter-btn sort-toggle {% if sort_by == 'price_asc' or sort_by == 'price_desc' %}active{% endif %}"
+                        onclick="toggleSortShopDetail('price')">
+                    <span>價格</span>
+                    {% if sort_by == 'price_asc' %}
+                        <i class="fas fa-sort-amount-up ml-2"></i>
+                    {% elif sort_by == 'price_desc' %}
+                        <i class="fas fa-sort-amount-down ml-2"></i>
+                    {% else %}
+                        <i class="fas fa-sort ml-2"></i>
+                    {% endif %}
+                </button>
             </div>
         </div>
 
@@ -377,27 +457,37 @@
                     <div class="drink-name">{{ drink.name }}</div>
 
                     {% if drink.description %}
-                    <div class="text-muted mb-2" style="font-size: 0.9rem;">
+                    <div class="text-muted mb-3" style="font-size: 0.9rem;">
                         {{ drink.description }}
                     </div>
                     {% endif %}
 
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div class="drink-price">{{ drink.get_price_range }}</div>
+                    <!-- 標籤區域 -->
+                    <div class="mb-3" style="display: flex; flex-wrap: wrap; gap: 6px;">
                         {% if drink.milk_type %}
-                        <span class="badge badge-info badge-milk">
-                            {% if drink.milk_type == 'creamer' %}奶精
-                            {% elif drink.milk_type == 'fresh_milk' %}鮮奶
-                            {% elif drink.milk_type == 'none' %}無奶
+                        <span class="badge badge-milk-{{ drink.milk_type }}" style="font-size: 0.85rem;">
+                            {% if drink.milk_type == 'creamer' %}<i class="fas fa-coffee"></i> 奶精
+                            {% elif drink.milk_type == 'fresh_milk' %}<i class="fas fa-glass-whiskey"></i> 鮮奶
                             {% endif %}
+                        </span>
+                        {% endif %}
+                        {% if drink.tea_type %}
+                        <span class="badge badge-tea-{{ drink.tea_type }}" style="font-size: 0.85rem;">
+                            <i class="fas fa-leaf"></i> {{ drink.get_tea_type_display }}
+                        </span>
+                        {% endif %}
+                        {% if drink.topping == 'yes' %}
+                        <span class="badge badge-info" style="font-size: 0.85rem;">
+                            <i class="fas fa-plus-circle"></i> 有配料
                         </span>
                         {% endif %}
                     </div>
 
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="drink-price">{{ drink.get_price_range }}</div>
+                    </div>
+
                     <div class="size-info">
-                        {% if drink.has_small %}
-                            <span class="size-badge">小杯 ${{ drink.price_small|floatformat:0 }}</span>
-                        {% endif %}
                         {% if drink.has_medium %}
                             <span class="size-badge">中杯 ${{ drink.price_medium|floatformat:0 }}</span>
                         {% endif %}
@@ -436,6 +526,26 @@
             return cookieValue;
         }
         const csrftoken = getCookie('csrftoken');
+
+        // Toggle sort for shop detail
+        function toggleSortShopDetail(type) {
+            const url = new URL(window.location);
+            const currentSort = url.searchParams.get('sort');
+
+            let newSort;
+            if (type === 'price') {
+                if (!currentSort || (!currentSort.includes('price'))) {
+                    newSort = 'price_asc';
+                } else if (currentSort === 'price_asc') {
+                    newSort = 'price_desc';
+                } else {
+                    newSort = 'price_asc';
+                }
+            }
+
+            url.searchParams.set('sort', newSort);
+            window.location.href = url.toString();
+        }
 
         // 切換收藏狀態
         function toggleFavorite(event, type, id, element) {

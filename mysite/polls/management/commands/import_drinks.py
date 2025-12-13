@@ -118,8 +118,6 @@ class Command(BaseCommand):
             'milk_type': self.parse_milk_type(row['奶類']),
             'tea_type': self.parse_tea_type(row['茶類']),
             'topping': self.parse_topping(row['配料']),
-            'has_small': self.parse_boolean(row['小杯']),
-            'price_small': self.parse_price(row['小杯價格']),
             'has_medium': self.parse_boolean(row['中杯']),
             'price_medium': self.parse_price(row['中杯價格']),
             'has_large': self.parse_boolean(row['大杯']),
@@ -196,6 +194,12 @@ class Command(BaseCommand):
             '烏龍茶': 'oolong_tea',
             '青茶': 'blue_tea',
             '抹茶': 'matcha',
+            '鐵觀音': 'tieguanyin',
+            '麥茶': 'barley_tea',
+            '四季春': 'season',
+            '茉莉花茶': 'jasmine',
+            '普洱茶': 'pu_erh',
+            '其他': 'other',
         }
         return mapping.get(value, None)
 

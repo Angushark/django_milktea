@@ -144,7 +144,8 @@ def nearby_shops(request):
     # 取得使用者位置
     user_lat = request.GET.get('lat', '')
     user_lng = request.GET.get('lng', '')
-    distance_filter = request.GET.get('distance', '')
+    # 預設距離篩選為 1km (當有位置且未指定距離時)
+    distance_filter = request.GET.get('distance', '1' if (user_lat and user_lng) else '')
     open_now = request.GET.get('open_now', '')  # Toggle
     sort_by = request.GET.get('sort', 'distance_asc')  # 預設距離由近到遠
 
@@ -282,8 +283,6 @@ def shop_detail(request, shop_id):
 def get_min_price(drink):
     """取得飲料的最低價格"""
     prices = []
-    if drink.has_small and drink.price_small:
-        prices.append(float(drink.price_small))
     if drink.has_medium and drink.price_medium:
         prices.append(float(drink.price_medium))
     if drink.has_large and drink.price_large:
@@ -294,8 +293,6 @@ def get_min_price(drink):
 def get_max_price(drink):
     """取得飲料的最高價格"""
     prices = []
-    if drink.has_small and drink.price_small:
-        prices.append(float(drink.price_small))
     if drink.has_medium and drink.price_medium:
         prices.append(float(drink.price_medium))
     if drink.has_large and drink.price_large:
@@ -306,8 +303,6 @@ def get_max_price(drink):
 def has_price_in_range(drink, min_price, max_price):
     """檢查飲料是否有任何杯型的價格在指定範圍內"""
     prices = []
-    if drink.has_small and drink.price_small:
-        prices.append(float(drink.price_small))
     if drink.has_medium and drink.price_medium:
         prices.append(float(drink.price_medium))
     if drink.has_large and drink.price_large:
@@ -547,3 +542,143 @@ def check_favorite(request):
         return JsonResponse({'favorited': exists})
     except Exception:
         return JsonResponse({'favorited': False})
+
+
+def search_drinks(request):
+    """智能飲料搜尋 - 支援模糊匹配、茶類、奶類等多種搜尋方式"""
+    search_query = request.GET.get('search', '').strip()
+
+    if not search_query:
+        return redirect('home')
+
+    # 開始建立查詢
+    all_drinks = Drink.objects.select_related('tea_shop').all()
+
+    # === 階段 1: 精確匹配（優先級最高） ===
+    # 直接匹配飲料名稱、描述或店家名稱
+    exact_matches = all_drinks.filter(
+        Q(name__icontains=search_query) |
+        Q(description__icontains=search_query) |
+        Q(tea_shop__name__icontains=search_query)
+    ).distinct()
+
+    # 如果精確匹配有結果，優先返回這些結果
+    if exact_matches.exists():
+        drinks = list(exact_matches)
+    else:
+        # === 階段 2: 智能拆解匹配（當精確匹配無結果時） ===
+        query_conditions = Q()
+
+        # 常見飲料組合關鍵字（完整詞優先）
+        drink_combinations = {
+            '鮮奶茶': Q(name__icontains='鮮奶') & Q(name__icontains='茶'),
+            '奶精茶': Q(name__icontains='奶精') & Q(name__icontains='茶'),
+            '珍珠奶茶': Q(name__icontains='珍珠') & Q(name__icontains='奶茶'),
+            '珍奶': Q(name__icontains='珍珠') | Q(name__icontains='奶茶'),
+            '奶綠': Q(name__icontains='奶綠') | (Q(name__icontains='綠茶') & Q(milk_type__isnull=False)),
+            '紅茶拿鐵': Q(name__icontains='紅茶') & Q(name__icontains='拿鐵'),
+            '綠茶拿鐵': Q(name__icontains='綠茶') & Q(name__icontains='拿鐵'),
+            '烏龍拿鐵': Q(name__icontains='烏龍') & Q(name__icontains='拿鐵'),
+            '抹茶拿鐵': Q(name__icontains='抹茶') & Q(name__icontains='拿鐵'),
+        }
+
+        # 檢查是否匹配組合關鍵字
+        matched_combination = False
+        for combo_keyword, combo_query in drink_combinations.items():
+            if combo_keyword in search_query:
+                query_conditions |= combo_query
+                matched_combination = True
+                break
+
+        # 如果沒有匹配到組合關鍵字，則進行單一屬性匹配
+        if not matched_combination:
+            # 茶類搜尋（僅當搜尋詞是純茶類時）
+            tea_type_mapping = {
+                '紅茶': 'black_tea',
+                '綠茶': 'green_tea',
+                '烏龍茶': 'oolong_tea',
+                '烏龍': 'oolong_tea',
+                '青茶': 'blue_tea',
+                '抹茶': 'matcha',
+                '鐵觀音': 'tieguanyin',
+                '麥茶': 'barley_tea',
+                '四季春': 'season',
+                '茉莉花茶': 'jasmine',
+                '茉莉': 'jasmine',
+                '普洱茶': 'pu_erh',
+                '普洱': 'pu_erh',
+            }
+
+            tea_matched = False
+            for tea_name, tea_code in tea_type_mapping.items():
+                # 只有當搜尋詞完全是茶類名稱時才用茶類篩選
+                if search_query == tea_name or (tea_name in search_query and len(search_query) <= len(tea_name) + 2):
+                    query_conditions |= Q(tea_type=tea_code)
+                    tea_matched = True
+                    break
+
+            # 奶類搜尋（僅當搜尋詞是純奶類時）
+            if search_query in ['鮮奶', '牛奶'] or (search_query.endswith('鮮奶') and len(search_query) <= 6):
+                query_conditions |= Q(milk_type='fresh_milk')
+            elif search_query == '奶精' or (search_query.endswith('奶精') and len(search_query) <= 6):
+                query_conditions |= Q(milk_type='creamer')
+
+            # 配料搜尋
+            if search_query in ['珍珠', '波霸', '配料'] or search_query.startswith('珍珠'):
+                query_conditions |= Q(topping='yes')
+
+            # 如果以上都沒匹配，嘗試部分匹配飲料名稱
+            if not tea_matched and not query_conditions:
+                # 拆解搜尋詞中的關鍵字
+                keywords_to_try = []
+                if '拿鐵' in search_query:
+                    keywords_to_try.append('拿鐵')
+                if '奶茶' in search_query and search_query != '奶茶':
+                    keywords_to_try.append('奶茶')
+
+                for keyword in keywords_to_try:
+                    query_conditions |= Q(name__icontains=keyword)
+
+        # 應用查詢條件
+        if query_conditions:
+            drinks = list(all_drinks.filter(query_conditions).distinct())
+        else:
+            drinks = []
+
+    # === 階段 3: 智能排序 ===
+    def get_relevance_score(drink):
+        """計算相關性分數，分數越高越相關"""
+        score = 0
+        drink_name_lower = drink.name.lower()
+        query_lower = search_query.lower()
+
+        # 1. 完全匹配（最高分）
+        if query_lower == drink_name_lower:
+            score += 1000
+
+        # 2. 名稱開頭匹配
+        if drink_name_lower.startswith(query_lower):
+            score += 500
+
+        # 3. 名稱包含完整關鍵字
+        if query_lower in drink_name_lower:
+            score += 300
+
+        # 4. 店家評分加成
+        score += float(drink.tea_shop.rating) * 10
+
+        return score
+
+    # 按相關性和店家評分排序
+    drinks = sorted(drinks, key=get_relevance_score, reverse=True)
+
+    # 限制結果數量（前 100 項）
+    drinks = drinks[:100]
+
+    context = {
+        'drinks': drinks,
+        'total_count': len(drinks),
+        'search_query': search_query,
+    }
+
+    return render(request, 'polls/search_results.html', context)

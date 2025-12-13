@@ -16,6 +16,7 @@ urlpatterns = [
     path('shops/<int:shop_id>/', polls_views.shop_detail, name='shop_detail'),
     path('drinks/', polls_views.recommended_drinks, name='recommended_drinks'),
     path('nearby/', polls_views.nearby_shops, name='nearby_shops'),
+    path('search/', polls_views.search_drinks, name='search_drinks'),
 
     # 使用者認證
     path('register/', polls_views.register, name='register'),

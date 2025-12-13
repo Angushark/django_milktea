@@ -78,13 +78,13 @@
 
         .shop-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 20px;
-            margin-bottom: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             transition: all 0.3s;
             border: 1px solid #f0f0f0;
             position: relative;
+            height: 100%;
         }
 
         .shop-card:hover {
@@ -173,6 +173,32 @@
             padding: 5px 12px;
             border-radius: 12px;
             font-size: 0.9rem;
+        }
+
+        .shop-image-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #f0f0f0;
+        }
+
+        .shop-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .shop-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+            color: #adb5bd;
+            font-size: 3rem;
         }
 
         /* Vertical Filter Layout */
@@ -378,7 +404,9 @@
         </div>
         {% endif %}
 
+        <div class="row">
         {% for shop in tea_shops %}
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
         <div class="shop-card">
             {% if user.is_authenticated %}
             <div class="favorite-btn" onclick="toggleFavorite(event, 'shop', {{ shop.id }}, this)" data-shop-id="{{ shop.id }}">
@@ -386,19 +414,32 @@
             </div>
             {% endif %}
 
-            <a href="{% url 'shop_detail' shop.id %}" class="shop-card-link">
+            <a href="{% url 'shop_detail' shop.id %}?next={{ request.get_full_path|urlencode }}" class="shop-card-link">
+                <!-- 照片區域 -->
+                {% load static %}
+                <div class="shop-image-container mb-3">
+                    <img src="{% static 'shop_images/' %}{{ shop.place_id }}.jpg"
+                         alt="{{ shop.name }}"
+                         class="shop-image"
+                         onerror="this.onerror=null; this.src='{% static 'shop_images/' %}{{ shop.place_id }}.png'; if(this.src.endsWith('.png') && this.complete && this.naturalHeight === 0) { this.style.display='none'; this.nextElementSibling.style.display='flex'; }">
+                    <div class="shop-image-placeholder" style="display: none;">
+                        <i class="fas fa-store"></i>
+                    </div>
+                </div>
+
+                <!-- 店家資訊 -->
                 <div class="d-flex justify-content-between align-items-start mb-2" style="padding-right: 50px;">
-                    <div class="shop-name">{{ shop.name }}</div>
-                    <div>
-                        {% if shop.distance %}
-                            <span class="distance-badge mr-2">
-                                <i class="fas fa-location-arrow"></i> {{ shop.distance|floatformat:2 }} 公里
-                            </span>
-                        {% endif %}
+                    <div class="shop-name flex-grow-1" style="margin-right: 10px;">{{ shop.name }}</div>
+                    <div style="flex-shrink: 0; display: flex; flex-direction: column; gap: 5px; align-items: flex-end;">
                         {% if shop.is_open_now == True %}
                             <span class="badge-open"><i class="fas fa-check-circle"></i> 營業中</span>
                         {% elif shop.is_open_now == False %}
                             <span class="badge-closed"><i class="fas fa-times-circle"></i> 休息中</span>
+                        {% endif %}
+                        {% if shop.distance %}
+                            <span class="distance-badge">
+                                <i class="fas fa-location-arrow"></i> {{ shop.distance|floatformat:2 }} km
+                            </span>
                         {% endif %}
                     </div>
                 </div>
@@ -406,32 +447,22 @@
                 <div class="shop-rating mb-2">
                     <i class="fas fa-star"></i> {{ shop.rating }}
                 </div>
-
-                <div class="text-muted mb-2">
-                    <i class="fas fa-map-marker-alt"></i> {{ shop.address }}
-                </div>
-
-                {% if shop.phone %}
-                <div class="text-muted mb-2">
-                    <i class="fas fa-phone"></i> {{ shop.phone }}
-                </div>
-                {% endif %}
-
-                <div class="text-muted" style="font-size: 0.9rem;">
-                    <i class="fas fa-clock"></i> {{ shop.opening_hours|truncatewords:10 }}
-                </div>
             </a>
         </div>
+        </div>
         {% empty %}
-        <div class="alert alert-info">
-            <i class="fas fa-info-circle"></i>
-            {% if user_lat and user_lng %}
-                找不到符合條件的店家
-            {% else %}
-                請先取得您的位置以顯示附近店家
-            {% endif %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                {% if user_lat and user_lng %}
+                    找不到符合條件的店家
+                {% else %}
+                    請先取得您的位置以顯示附近店家
+                {% endif %}
+            </div>
         </div>
         {% endfor %}
+        </div>
     </div>
 
     <!-- Distance Slider Modal -->
@@ -581,10 +612,8 @@
 
             let newSort;
             if (type === 'distance') {
-                // 如果當前不是距離排序，則設為 distance_asc（預設由近到遠）
-                if (!currentSort || (!currentSort.includes('distance'))) {
-                    newSort = 'distance_asc';
-                } else if (currentSort === 'distance_asc') {
+                // 預設是 distance_asc，第一次點擊應切換到 distance_desc
+                if (!currentSort || currentSort === 'distance_asc' || currentSort === 'distance') {
                     newSort = 'distance_desc';
                 } else {
                     newSort = 'distance_asc';

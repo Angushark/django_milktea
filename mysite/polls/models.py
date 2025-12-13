@@ -121,9 +121,6 @@ class Drink(models.Model):
     topping = models.CharField(max_length=10, choices=[('yes', '有'), ('no', '無')], blank=True, null=True, verbose_name='配料')
 
     # 杯型與價格
-    has_small = models.BooleanField(default=False, verbose_name='有小杯')
-    price_small = models.DecimalField(max_digits=5, decimal_places=0, blank=True, null=True, verbose_name='小杯價格')
-
     has_medium = models.BooleanField(default=False, verbose_name='有中杯')
     price_medium = models.DecimalField(max_digits=5, decimal_places=0, blank=True, null=True, verbose_name='中杯價格')
 
@@ -143,8 +140,6 @@ class Drink(models.Model):
     def get_price_range(self):
         """取得價格範圍"""
         prices = []
-        if self.has_small and self.price_small:
-            prices.append(int(self.price_small))
         if self.has_medium and self.price_medium:
             prices.append(int(self.price_medium))
         if self.has_large and self.price_large:

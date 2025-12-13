@@ -506,7 +506,7 @@
                 </div>
             {% else %}
                 <div style="display: flex; gap: 10px;">
-                    <a href="{% url 'login' %}" class="favorite-link" style="background: white;">
+                    <a href="{% url 'login' %}" class="favorite-link register-btn">
                         <i class="fas fa-sign-in-alt"></i>
                         登入
                     </a>
@@ -529,10 +529,10 @@
             <!-- 搜尋區域 -->
             <div class="search-section">
                 <div class="search-wrapper">
-                    <form method="GET" action="{% url 'shop_list' %}">
+                    <form method="GET" action="{% url 'search_drinks' %}">
                         <div class="input-group">
                             <input type="text" name="search" class="form-control search-input"
-                                   placeholder="搜尋店家名稱或地址...">
+                                   placeholder="搜尋完整飲料類型...例如：珍珠奶茶、紅茶拿鐵、鮮奶綠茶">
                             <div class="input-group-append">
                                 <button class="btn search-btn" type="submit">
                                     <i class="fas fa-search"></i> 搜尋

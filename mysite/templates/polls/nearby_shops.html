@@ -348,6 +348,9 @@
     </div>
 
     <div class="container">
+        <!-- Anchor point for scroll position -->
+        <div id="filters"></div>
+
         {% if not user_lat or not user_lng %}
         <div class="location-section text-center">
             <h5 class="mb-3"><i class="fas fa-map-marker-alt"></i> 取得您的位置</h5>
@@ -579,7 +582,7 @@
             console.log('Applying distance filter:', distance, 'km');
             console.log('Full URL:', url.toString());
             $('#distanceModal').modal('hide');
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // Clear distance filter
@@ -590,7 +593,7 @@
             url.searchParams.delete('distance');
 
             $('#distanceModal').modal('hide');
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // Toggle open now filter
@@ -602,7 +605,7 @@
             } else {
                 url.searchParams.set('open_now', 'true');
             }
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // Toggle sort
@@ -630,7 +633,7 @@
             }
 
             url.searchParams.set('sort', newSort);
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         function toggleFavorite(event, type, id, element) {

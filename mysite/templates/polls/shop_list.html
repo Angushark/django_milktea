@@ -356,6 +356,9 @@
             </form>
         </div>
 
+        <!-- Anchor point for scroll position -->
+        <div id="filters"></div>
+
         <div class="filter-section">
             <!-- Row 1: 營業中 Toggle -->
             <div class="filter-row">
@@ -525,14 +528,14 @@
             const rating = ratingValues[index];
             const url = new URL(window.location);
             url.searchParams.set('rating', rating);
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // Clear rating filter
         function clearRating() {
             const url = new URL(window.location);
             url.searchParams.delete('rating');
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // Toggle sort direction
@@ -541,7 +544,7 @@
             const currentSort = url.searchParams.get('sort') || 'rating_desc';
             const newSort = currentSort === 'rating_asc' ? 'rating_desc' : 'rating_asc';
             url.searchParams.set('sort', newSort);
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // Toggle open now filter
@@ -553,7 +556,7 @@
             } else {
                 url.searchParams.set('open_now', 'true');
             }
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // 切換收藏狀態

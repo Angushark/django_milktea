@@ -318,6 +318,9 @@
     </div>
 
     <div class="container">
+        <!-- Anchor point for scroll position -->
+        <div id="filters"></div>
+
         <!-- 篩選區域 -->
         <div class="filter-section">
             <!-- Row 1: 店家評價 (Slider) -->
@@ -349,11 +352,11 @@
             <div class="filter-row">
                 <span class="filter-label">奶類：</span>
                 <div class="filter-buttons-group">
-                    <a href="?rating={{ rating_filter }}{% if milk_filter != 'fresh_milk' %}&milk_type=fresh_milk{% endif %}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}{% if milk_filter != 'fresh_milk' %}&milk_type=fresh_milk{% endif %}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if milk_filter == 'fresh_milk' %}active{% endif %}">
                         鮮奶
                     </a>
-                    <a href="?rating={{ rating_filter }}{% if milk_filter != 'creamer' %}&milk_type=creamer{% endif %}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}{% if milk_filter != 'creamer' %}&milk_type=creamer{% endif %}&price={{ price_filter }}&tea_type={{ tea_filter }}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if milk_filter == 'creamer' %}active{% endif %}">
                         奶精
                     </a>
@@ -364,27 +367,27 @@
             <div class="filter-row">
                 <span class="filter-label">茶類：</span>
                 <div class="filter-buttons-group">
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'black_tea' %}&tea_type=black_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'black_tea' %}&tea_type=black_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'black_tea' %}active{% endif %}">紅茶</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'green_tea' %}&tea_type=green_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'green_tea' %}&tea_type=green_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'green_tea' %}active{% endif %}">綠茶</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'oolong_tea' %}&tea_type=oolong_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'oolong_tea' %}&tea_type=oolong_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'oolong_tea' %}active{% endif %}">烏龍茶</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'blue_tea' %}&tea_type=blue_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'blue_tea' %}&tea_type=blue_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'blue_tea' %}active{% endif %}">青茶</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'matcha' %}&tea_type=matcha{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'matcha' %}&tea_type=matcha{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'matcha' %}active{% endif %}">抹茶</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'tieguanyin' %}&tea_type=tieguanyin{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'tieguanyin' %}&tea_type=tieguanyin{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'tieguanyin' %}active{% endif %}">鐵觀音</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'barley_tea' %}&tea_type=barley_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'barley_tea' %}&tea_type=barley_tea{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'barley_tea' %}active{% endif %}">麥茶</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'season' %}&tea_type=season{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'season' %}&tea_type=season{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'season' %}active{% endif %}">四季春</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'jasmine' %}&tea_type=jasmine{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'jasmine' %}&tea_type=jasmine{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'jasmine' %}active{% endif %}">茉莉花茶</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'pu_erh' %}&tea_type=pu_erh{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'pu_erh' %}&tea_type=pu_erh{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'pu_erh' %}active{% endif %}">普洱茶</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'other' %}&tea_type=other{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}{% if tea_filter != 'other' %}&tea_type=other{% endif %}&topping={{ topping_filter }}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if tea_filter == 'other' %}active{% endif %}">其他</a>
                 </div>
             </div>
@@ -393,9 +396,9 @@
             <div class="filter-row">
                 <span class="filter-label">配料：</span>
                 <div class="filter-buttons-group">
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}{% if topping_filter != 'yes' %}&topping=yes{% endif %}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}{% if topping_filter != 'yes' %}&topping=yes{% endif %}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if topping_filter == 'yes' %}active{% endif %}">有</a>
-                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}{% if topping_filter != 'no' %}&topping=no{% endif %}&sort={{ sort_by }}"
+                    <a href="?rating={{ rating_filter }}&milk_type={{ milk_filter }}&price={{ price_filter }}&tea_type={{ tea_filter }}{% if topping_filter != 'no' %}&topping=no{% endif %}&sort={{ sort_by }}#filters"
                        class="btn filter-btn {% if topping_filter == 'no' %}active{% endif %}">無</a>
                 </div>
             </div>
@@ -420,7 +423,7 @@
                     {% elif sort_by == 'price_desc' %}
                         <i class="fas fa-sort-amount-down ml-2"></i>
                     {% else %}
-                        <i class="fas fa-sort ml-2"></i>
+                        <i class="fas fa-sort-amount-up ml-2"></i>
                     {% endif %}
                 </button>
             </div>
@@ -617,14 +620,14 @@
             const rating = ratingValues[index];
             const url = new URL(window.location);
             url.searchParams.set('rating', rating);
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // Clear rating filter
         function clearRating() {
             const url = new URL(window.location);
             url.searchParams.delete('rating');
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // Price slider values
@@ -646,14 +649,14 @@
             const priceValue = priceRanges[index].value;
             const url = new URL(window.location);
             url.searchParams.set('price', priceValue);
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // Clear price filter
         function clearPrice() {
             const url = new URL(window.location);
             url.searchParams.delete('price');
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // Toggle sort
@@ -681,7 +684,7 @@
             }
 
             url.searchParams.set('sort', newSort);
-            window.location.href = url.toString();
+            window.location.href = url.toString() + '#filters';
         }
 
         // 切換收藏狀態
